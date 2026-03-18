@@ -1,0 +1,146 @@
+{
+  "app": {
+    "defaults": {
+      "name": "Documentação Pedagógica",
+      "language": "Português (Brasil)",
+      "language-select": "Idiomas",
+      "portal-eleva": "Portal Eleva",
+      "pagina-inicial": "Página Inicial",
+      "breadcrumb-start": "Você está em: ",
+      "status": "Situação",
+      "menu": "Menu",
+      "geral": "Geral",
+      "nao-informado": "Não informado.",
+      "tutorial": "Tutorial",
+      "confirm-title": "Confirmação",
+      "error-message": "Ocorreu um erro inesperado",
+      "concurrency-warning": "Aguarde a conclusão da operação em andamento.",
+      "actions": {
+        "acoes": "Ações",
+        "save": "Salvar",
+        "import": "Importar",
+        "cancel": "Cancelar",
+        "search": "Buscar",
+        "prior": "Anterior",
+        "next": "Próximo",
+        "add": "Adicionar",
+        "back": "Voltar",
+        "edit": "Editar",
+        "delete": "Excluir",
+        "confirmar": "Confirmar",
+        "clear": "Limpar",
+        "visualizar": "Visualizar",
+        "download": "Download"
+      }
+    },
+    "home": {
+      "loading": "Validando seu acesso, aguarde...",
+      "unauthorized-title": "Erro ao identificar o usuário.",
+      "unauthorized-text": "Sua sessão de acesso pode ter expirado. Favor refazer seu login no Portal.",
+      "noroute-title": "Permissões de acesso não encontradas.",
+      "noroute-text": "Nenhum acesso disponível para seu usuário. Favor refazer seu login no Portal.",
+      "logoff": "Voltar ao Portal"
+    },
+    "navigation-tabs": {
+      "documentacaoPedagogica": "Documentação Pedagógica",
+      "lancarNota": "Lançar nota",
+      "historicoLancamento": "Histórico de lançamentos"
+    },
+    "eleva": {
+      "labels": {
+        "rede": "Rede",
+        "rede-sistema-ensino": "Rede Sistema de Ensino",
+        "escola": "Escola",
+        "escolas": "Escolas",
+        "serie": "Série",
+        "series": "Séries",
+        "turma": "Turma",
+        "turmas": "Turmas",
+        "disciplina": "Disciplina",
+        "disciplinas": "Disciplinas",
+        "ano-letivo": "Ano Letivo",
+        "agrupamento": "Agrupamento",
+        "matricula": "Matrícula",
+        "aluno": "Aluno",
+        "tipo": "Tipo"
+      },
+      "placeholder": {
+        "rede": "Selecione a rede",
+        "escola": "Selecione a escola",
+        "serie": "Selecione a série",
+        "turma": "Selecione a turma",
+        "disciplina": "Selecione a disciplina",
+        "ano-letivo": "Selecione o ano letivo",
+        "agrupamento": "Selecione o agrupamento",
+        "matricula": "Selecione a matrícula",
+        "aluno": "Selecione o aluno",
+        "tipo": "Selecione o tipo"
+      }
+    },
+    "lista-alunos-historico":{
+      "sem-dados":"Ainda não encontrou o que queria? Experimente utilizar novos filtros!"
+    },
+    "lista-escolas":{
+      "labels":{
+        "tituloComponente":"Configurações da escola",
+        "cabecalho":"Cabeçalho",
+        "assinaturaSecretaria":"Assinatura Secretário(o)",
+        "assinaturaDiretor":"Assinatura Diretor(o)"
+      },
+      "placeholder":{
+        "nao-incluso":"Não Incluso"
+      }
+    },
+    "pessoas": {
+      "nome": "Nome",
+      "email": "E-mail",
+      "cpf": "CPF"
+    },
+    "messages": {
+      "errors": {
+        "default": "Ocorreu um erro inesperado. Por favor, entrar em contato com o suporte.",
+        "form": "Ocorreu um erro. Preencha os campos corretamente.",
+        "download-s3": "Ocorreu um erro no download do arquivo. Recarregue a página e tente novamente."
+      },
+      "empty-list": "Nenhum registro encontrado.",
+      "update-sucess": "Dados atualizados com sucesso",
+      "loading": "Carregando ...",
+      "validations": {
+        "form": {
+          "invalid": "Campo inválido",
+          "required": "Esse campo é obrigatório",
+          "number-max": "Limite máximo ultrapassado: {{max}}.",
+          "file-upload-extensions": "O arquivo escolhido não está no formato correto ({{extensions}}).",
+          "file-upload-size": "O arquivo é maior que o limite permitido de {{size}}.",
+          "cpf": "CPF informado é inválido",
+          "date": "Data informada é inválida",
+          "data-maior-q-filtro": "Data é maior que a utilizada no filtro.",
+          "data-menor-q-filtro": "Data é menor que a utilizada no filtro."
+        }
+      }
+    },
+    "error-page": {
+      "unauthorized": {
+        "title": "Ah, não &#128543, ocorreu um erro com o seu acesso.",
+        "description": "Clique no botão \"Ir para o Portal Eleva\" e faça o login para acessar esta opção &#128578;",
+        "linkPortal": "Ir para o Portal Eleva"
+      },
+      "unexpected": {
+        "title": "Ah, não &#128543, ocorreu um erro inesperado no Portal.",
+        "description": "Clique no botão \"Ir para a Página Inicial\" e continue de onde parou &#128578;",
+        "linkLandingPage": "Ir para a Página Inicial"
+      },
+      "permission": {
+        "title": "Ops! O seu perfil não tem acesso a esta área.",
+        "description": "Clique no botão \"Ir para a Página Inicial\" e continue de onde parou &#128578;",
+        "linkPortal": "Ir para a Página Inicial"
+      }
+    },
+    "filtro-alunos": {
+      "title": "Escolha seus filtros"
+    },
+    "barra-busca": {
+      "filter": "Filtro"
+    }
+  }
+}

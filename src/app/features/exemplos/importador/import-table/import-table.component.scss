@@ -1,0 +1,132 @@
+.spreadsheet {
+  user-select: none;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  background: #fff;
+
+  th,
+  td {
+    border: 1px solid #adb2ba;
+    padding: 4px 10px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  // Cabeçalho estilo planilha
+  thead {
+    /* border-top: 1px solid #adb2ba; */
+    background: #f5f7f9;
+
+    th {
+      height: 20px;
+      font-weight: 600;
+      color: #444;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+
+      background: #c3c8d1;
+      /* background: linear-gradient( */
+      /* to bottom, */
+      /* #f5f7f9 calc(100% - 1px), */
+      /* #bbb 100% */
+      /* ); */
+    }
+  }
+
+  // linhas
+  /* tbody tr { */
+  /* transition: background 0.15s; */
+
+  /* &:hover { */
+  /* background: #f1f3f4; */
+  /* } */
+  /* } */
+
+  // zebra rows
+  tbody tr:nth-child(even) {
+    background: #fcfcfc;
+  }
+
+  // célula selecionável
+  td {
+    cursor: default;
+
+    &:focus,
+    &.selected {
+      outline: 2px solid #1a73e8;
+      outline-offset: -2px;
+      background: #e8f0fe;
+    }
+  }
+
+  select {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font: inherit;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.table-sheet-container {
+  width: 100%;
+  overflow: auto;
+  border-bottom: 1px solid #dadce0;
+  border-left: 1px solid #dadce0;
+  border-right: 1px solid #dadce0;
+  height: 96%;
+  outline: none; /* evita outline genérico */
+}
+
+.table-sheet-container:focus {
+  /* outline: 2px solid #4285f4; */
+  /* box-shadow: 0 0 0 2px #bcdffb66; */
+}
+
+.cell-selected {
+  outline: 2px solid #1a73e8;
+  outline-offset: -2px;
+  background: #e8f0fe;
+}
+
+.td-values {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cell-value {
+  padding: 2px;
+  border-radius: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.invalid {
+  background: #e65637 !important;
+  color: white;
+}
+
+.gambi {
+  height: 1px;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  width: 100%;
+  background: #dadce0;
+}
+
+.teste {
+  height: 100%;
+}
+
+.table-title {
+  height: 4%;
+  display: flex;
+}

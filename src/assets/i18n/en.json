@@ -1,0 +1,131 @@
+{
+  "app": {
+    "defaults": {
+      "name": "Pedagogical Documentation",
+      "language": "English",
+      "language-select": "Languages",
+      "portal-eleva": "Eleva Portal",
+      "pagina-inicial": "Start Page",
+      "breadcrumb-start": "You are in: ",
+      "status": "Status",
+      "menu": "Menu",
+      "geral": "General",
+      "nao-informado": "Not informed",
+      "tutorial": "Tutorial",
+      "confirm-title": "Confirmation",
+      "error-message": "An unexpected error occurred",
+      "concurrency-warning": "Wait for the operation in progress to complete.",
+      "actions": {
+        "acoes": "Actions",
+        "save": "Save",
+        "import": "Import",
+        "cancel": "Cancel",
+        "search": "Search",
+        "prior": "Prior",
+        "next": "Next",
+        "add": "Add",
+        "back": "Back",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirmar": "Confirm",
+        "clear": "Clear",
+        "visualizar": "View",
+        "download": "Download"
+      }
+    },
+    "home": {
+      "loading": "Validating your access, wait...",
+      "unauthorized-title": "Error identifying user.",
+      "unauthorized-text": "Your login session may have expired. Please re-login to the Portal.",
+      "noroute-title": "Access permissions not found.",
+      "noroute-text": "No access available for your user. Please re-login to the Portal.",
+      "logoff": "Back to Portal"
+    },
+    "navigation-tabs": {
+      "documentacaoPedagogica": "Pedagogical Documentation",
+      "configuracoes": "Settings",
+      "alunos": "Students"
+    },
+    "eleva": {
+      "labels": {
+        "rede": "Rede",
+        "rede-sistema-ensino": "Rede Sistema de Ensino",
+        "escola": "School",
+        "escolas": "Schools",
+        "serie": "Grade",
+        "series": "Grades",
+        "turma": "Classroom",
+        "turmas": "Classrooms",
+        "disciplina": "Subject",
+        "disciplinas": "Subjects",
+        "ano-letivo": "Ano Letivo",
+        "agrupamento": "Agrupamento",
+        "matricula": "Matrícula",
+        "aluno": "Student",
+        "tipo": "Type"
+      },
+      "placeholder": {
+        "rede": "Selecione a rede",
+        "escola": "Choose a school",
+        "serie": "Choose a grade",
+        "turma": "Choose a classroom",
+        "disciplina": "Choose a subject",
+        "ano-letivo": "Selecione o ano letivo",
+        "agrupamento": "Selecione o agrupamento",
+        "matricula": "Selecione a matrícula",
+        "aluno": "Choose a student",
+        "tipo": "Choose a type"
+      }
+    },
+    "pessoas": {
+      "nome": "Name",
+      "email": "E-mail",
+      "cpf": "CPF"
+    },
+    "messages": {
+      "errors": {
+        "default": "Ocorreu um erro inesperado. Por favor, entrar em contato com o suporte.",
+        "form": "Ocorreu um erro. Preencha os campos corretamente.",
+        "download-s3": "Ocorreu um erro no download do arquivo. Recarregue a página e tente novamente."
+      },
+      "empty-list": "Nenhum registro encontrado.",
+      "update-sucess": "Dados atualizados com sucesso",
+      "loading": "Loading ...",
+      "validations": {
+        "form": {
+          "required": "Esse campo é obrigatório",
+          "number-max": "Limite máximo ultrapassado: {{max}}.",
+          "file-upload-extensions": "O arquivo escolhido não está no formato correto ({{extensions}}).",
+          "file-upload-size": "O arquivo é maior que o limite permitido de {{size}}.",
+          "cpf": "CPF informado é inválido",
+          "date": "Data informada é inválida",
+          "data-maior-q-filtro": "Data é maior que a utilizada no filtro.",
+          "data-menor-q-filtro": "Data é menor que a utilizada no filtro."
+        }
+      }
+    },
+    "error-page": {
+      "unauthorized": {
+        "title": "Ah, não &#128543, ocorreu um erro com o seu acesso.",
+        "description": "Clique no botão \"Ir para o Portal Eleva\" e faça o login para acessar esta opção &#128578;",
+        "linkPortal": "Ir para o Portal Eleva"
+      },
+      "unexpected": {
+        "title": "Ah, não &#128543, ocorreu um erro inesperado no Portal.",
+        "description": "Clique no botão \"Ir para a Página Inicial\" e continue de onde parou &#128578;",
+        "linkLandingPage": "Ir para a Página Inicial"
+      },
+      "permission": {
+        "title": "Ops! O seu perfil não tem acesso a esta área.",
+        "description": "Clique no botão \"Ir para a Página Inicial\" e continue de onde parou &#128578;",
+        "linkPortal": "Ir para a Página Inicial"
+      }
+    },
+    "filtro-alunos": {
+      "title": "Escolha seus filtros"
+    },
+    "barra-busca": {
+      "filter": "Filtro"
+    }
+  }
+}

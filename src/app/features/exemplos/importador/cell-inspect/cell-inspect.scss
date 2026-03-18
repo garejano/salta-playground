@@ -1,0 +1,217 @@
+.cell-inspect-container {
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+}
+
+.resolved {
+  background: green;
+}
+
+.error-item {
+  display: flex;
+  background: white;
+  flex-direction: column;
+  border-radius: 4px;
+  background-color: #e8eaee;
+
+  box-shadow:
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  cursor: pointer;
+}
+.error-item-title {
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+}
+
+.button-remove {
+  display: flex;
+  align-items: center;
+  background: #e65637;
+  color: white;
+  padding: 2px;
+  border-radius: 4px 0px 0px 4px;
+  /* border-radius:4px; */
+}
+
+.error-label {
+  background: #e65637;
+  color: white;
+  padding: 2px;
+  /* border-radius: 0px 4px 4px 0px; */
+  border-radius: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+  white-space: nowrap;
+}
+
+.error-item-title:hover {
+  background: #f5f7f9;
+}
+
+.title-selected {
+  border-radius: 4px 4px 0px 0px;
+}
+
+.error-selected {
+  outline: 2px solid #1a73e8;
+}
+
+.error-selected:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.error-count {
+  padding: 2px;
+  border-radius: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-size: 0.75rem;
+  width: 100%;
+}
+
+.errors {
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+  height: 100%;
+  gap: 6px;
+  overflow-y: scroll;
+}
+
+.arrow {
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px;
+  border-bottom: 1px solid silver;
+  span {
+    font-size: 12px;
+  }
+}
+
+.auto-button {
+  cursor: pointer;
+  border: none;
+  /* color: white; */
+  border-radius: 4px;
+  padding-left: 4px;
+  padding-right: 8px;
+  /* background: #242cc2; */
+  background: none;
+  border: 1px dashed green;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.auto-button:hover {
+  background: #0e124e;
+}
+
+.wand-icon {
+  font-size: 13px;
+  /* color: green; */
+}
+
+.counter-icons {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.prox-count {
+  display: flex;
+  border-radius: 4px;
+  /* color: white; */
+  padding-left: 4px;
+  padding-right: 8px;
+  /* background: #242cc2; */
+  border: 1px dashed green;
+  gap: 4px;
+  font-size: 10px;
+  height: 20px;
+  align-items: center;
+}
+
+.first-prox {
+  border: 1px dashed green;
+  padding: 2px;
+  border-radius: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+  white-space: nowrap;
+}
+
+.value-and-prox {
+  display: flex;
+  width: 100%;
+  gap: 4px;
+}
+
+.arrow-prox {
+  color: green;
+}
+
+.error-body {
+  cursor: default;
+  background: white;
+  border-radius: 0px 0px 4px 4px;
+  min-height: 100px;
+  padding: 4px;
+
+  max-height: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px;
+  width: 94%;
+}
+
+.prox-item {
+  display: flex;
+}
+
+.select-option {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  border: 1px solid silver;
+  border-radius: 4px;
+  align-items: center;
+  height: 24px;
+  padding: 4px;
+  width: 100%;
+  padding-left: 8px;
+}
+.proximidade {
+  border: 1px dashed green;
+  border-radius: 4px;
+}
+
+.sugestao-label {
+  font-size: 12px;
+  padding-left: 4px;
+}
+
+.label-remove {
+  display: flex;
+}

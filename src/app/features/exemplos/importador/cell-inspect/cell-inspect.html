@@ -1,0 +1,106 @@
+<div class="cell-inspect-container">
+  <span> <b>Coluna: </b> {{etapa.label}}</span>
+  <div class="info">
+    <span>Valores invalidos</span>
+    <button class="auto-button">
+      <span class="material-symbols-outlined wand-icon"> wand_stars </span>
+      Aplicar sugestões
+    </button>
+  </div>
+
+  <div class="errors">
+    <div
+      class="error-item"
+      *ngFor="let error of etapa.errors | keyvalue"
+      name="v_value"
+      [class.error-selected]="erroSelecionado?.idx === error.value.idx"
+    >
+      <div
+        (click)="toggleErro(error.value)"
+        class="error-item-title"
+        [class.title-selected]="erroSelecionado?.idx === error.value.idx"
+        [class.error-selected]="erroSelecionado?.idx === error.value.idx"
+      >
+        <div class="value-and-prox">
+          <div class="label-remove">
+            <!-- <div class="button-remove"> -->
+            <!-- <span class="material-symbols-outlined"> variable_remove </span> -->
+            <!-- </div> -->
+            <span class="error-label" [title]="error.value.label">
+              {{error.value.label}}
+            </span>
+          </div>
+
+          <span
+            *ngIf="error.value.proximidade.length > 0"
+            class="material-symbols-outlined arrow-prox"
+          >
+            arrow_right_alt
+          </span>
+          <span
+            *ngIf="error.value.proximidade.length > 0"
+            class="first-prox"
+            [title]="error.value.label"
+          >
+            <!-- {{error.value.proximidade[0].proximidade}}% - -->
+            {{error.value.proximidade[0]?.descricao}}
+
+            <!-- <span class="material-symbols-outlined wand-icon"> -->
+            <!-- wand_stars -->
+            <!-- </span> -->
+          </span>
+
+          <span class="error-count">
+            <!-- {{error.value.linhas.length}} {{error.value.linhas.length > 1 ? 'linhas' : 'linha'}} -->
+          </span>
+        </div>
+
+        <div class="counter-icons">
+          <span *ngIf="error.value.proximidade.length" class="prox-count">
+            <span>{{error.value.proximidade.length}}</span>
+            <span class="material-symbols-outlined wand-icon">
+              wand_stars
+            </span>
+            <span>{{error.value.proximidade[0].proximidade}}%</span>
+          </span>
+
+          <span
+            class="material-symbols-outlined arrow"
+            [class.rotated]="error.value.idx == erroSelecionado?.idx"
+          >
+            arrow_drop_down
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="error-body"
+        [hidden]="erroSelecionado?.idx !== error.value.idx"
+      >
+        <div *ngIf="error.value.proximidade.length > 0" class="proximidade">
+          <span class="sugestao-label">Sugestões</span>
+          <div class="options-list">
+            <div
+              *ngFor="let prox of error.value.proximidade"
+              (click)="selectOption(prox)"
+              class="select-option"
+            >
+              <span>{{prox.descricao}}</span>
+              <span class="sugestao-label">{{prox.proximidade}}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="options-list">
+          <div
+            *ngFor="let option of options"
+            (click)="selectOption(option)"
+            class="select-option"
+          >
+            <span>{{option.descricao}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
