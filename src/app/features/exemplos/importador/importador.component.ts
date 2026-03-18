@@ -185,7 +185,8 @@ export class ImportadorComponent implements OnInit {
               value: i,
               type: 'string',
               valid: false,
-              normalized: normalize(i)
+              normalized: normalize(i),
+              original_normalized: normalize(i),
             }
           })
         }
@@ -255,10 +256,16 @@ export class ImportadorComponent implements OnInit {
 
       if (!existe) {
         etapa.errors![normalized] = {
+          remove: false,
+          changed: false,
           idx: error_count,
           resolved: false,
           label: string.length ? string : "campo_vazio",
           normalized: normalized,
+          original: {
+            value: string.length ? string : "campo_vazio",
+            normalized: normalized
+          },
           linhas: [...new Set(result.map(x => { return x.rowIdx }))],
           proximidade: normalized.length > 1 ? proximidade : [],
           open: false,
@@ -300,17 +307,18 @@ export class ImportadorComponent implements OnInit {
     return this.configAtual?.colunas[this.etapaAtual];
   }
 
-  updateCell(update: UpdateCell): void {
+  updateCell(update: UpdateCell, restore: boolean = false): void {
     update.linhas?.forEach((n) => {
       const cell = this.tableData.rows[n].cells[this.etapaAtual];
       const cellValues = cell.values;
 
-      const values_to_change = cellValues?.filter((x) => x.normalized == update.original_normalized)
+      const values_to_change = cellValues?.filter((x) => x.normalized == update.original_normalized || x.original_normalized == update.original_normalized)
 
       values_to_change?.forEach((x) => {
-        x.value = update.new_value;
-        x.normalized = normalize(update.new_value);
-        x.valid = true;
+        x.value = update.option.descricao;
+        x.normalized = normalize(update.option.descricao);
+        x.hash = update.option.hash;
+        x.valid = update.restore ? false : true;
       })
 
       const anyInvalid = cellValues?.some(x => !x.valid) ?? false;
@@ -330,6 +338,7 @@ export class ImportadorComponent implements OnInit {
 
 
 function normalize(term: string): string {
+  if (!term) return "";
   return term
     .toLowerCase()
     .normalize("NFD")

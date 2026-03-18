@@ -10,6 +10,7 @@
     (focusin)="focused = true"
     (focusout)="focused = false"
   >
+    <div class="gambi"></div>
     <table class="spreadsheet" (clickOutside)="focusOut()">
       <thead>
         <tr>
@@ -35,7 +36,7 @@
                 [class.invalid]="!cell.valid"
                 *ngFor="let value of cell.values"
               >
-                {{value.value.length ? value.value : 'campo_vazio'}}
+                {{value?.value?.length ? value.value : 'campo_vazio'}}
               </span>
             </div>
           </td>

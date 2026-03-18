@@ -19,16 +19,11 @@ export class CellInspect implements OnInit {
   erroSelecionado?: CellError | null = undefined;
 
   ngOnInit() {
-    this.erroSelecionado = Object.values(this.etapa.errors)[0];
+    // this.erroSelecionado = Object.values(this.etapa.errors)[0];
   }
 
   logError(error: { key: string, value: CellError }) {
     if (error.value.resolved) return;
-    this.update.emit({
-      original_normalized: error.value.normalized,
-      new_value: "WoW",
-      linhas: error.value.linhas
-    })
     error.value.resolved = true;
   }
 
@@ -50,9 +45,57 @@ export class CellInspect implements OnInit {
     this.selecionaErro.emit(this.erroSelecionado);
   }
 
-  selectOption(option:BaseResponse | any){
-    console.log(option)
-
+  selectOption(option: BaseResponse | any, error: CellError) {
+    error.changed = true;
+    this.update.emit({
+      original_normalized: error.original.normalized,
+      option: option,
+      linhas: error.linhas,
+      restore: false,
+    })
   }
+
+  restore(error: CellError) {
+    error.changed = false;
+    const option = {
+      hash: null,
+      descricao: error.original.value
+    }
+
+    const update: UpdateCell = {
+      original_normalized: error.original.normalized,
+      option: option,
+      linhas: error.linhas,
+      restore: true,
+    }
+
+    this.update.emit(update)
+  }
+
+  autoCorrect() {
+    Object.values(this.etapa.errors).forEach((error: CellError) => {
+      if (error.proximidade.length > 0) {
+        const first = error.proximidade[0];
+        this.selectOption(first, error)
+      }
+    })
+  }
+
+  remove(error: CellError) {
+    error.remove = true;
+    //TODO: Validar qual linha sera atualizar
+    // atualiza linhas via EventEmitter -> ImportadorComponent
+    this.erroSelecionado = null;
+    this.selecionaErro.emit(this.erroSelecionado);
+  }
+
+  undoRemove(error: CellError) {
+    error.remove = false;
+    //TODO: Validar qual linha sera atualizar
+    // atualiza linhas via EventEmitter -> ImportadorComponent
+    this.erroSelecionado = null;
+    this.selecionaErro.emit(this.erroSelecionado);
+  }
+
 
 }

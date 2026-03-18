@@ -27,6 +27,8 @@ export interface CellValue {
   rowIdx: number,
   value?: any;
   normalized?: any;
+  original_normalized?: any;
+
   hash?: string;
   type: string;
   valid: boolean;
@@ -39,13 +41,19 @@ export interface CellCursor {
 }
 
 export interface CellError {
+  remove: boolean;
   idx: number;
   resolved: boolean;
   normalized: string;
   label: string
   linhas?: number[]
-  proximidade?: any;
+  proximidade?: any[];
   open?: boolean;
+  original: {
+    value: string,
+    normalized: string,
+  },
+  changed: boolean;
 }
 
 
@@ -79,9 +87,9 @@ export interface ConfiguracaoImportacao {
 
 export interface UpdateCell {
   original_normalized?: string;
-  new_value: string;
-  linhas?: number[]
-
+  option: { hash: string, descricao: string };
+  linhas?: number[];
+  restore: boolean;
 }
 
 // type ImportValidatorFn = (row: RowData,)

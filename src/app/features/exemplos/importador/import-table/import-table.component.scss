@@ -4,19 +4,23 @@
   border-collapse: collapse;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 13px;
-  background: #fff;
+  /* background: #fff; */
+
+  box-shadow:
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
 
   th,
   td {
-    border: 1px solid #adb2ba;
+    /* border: 1px solid #adb2ba; */
     padding: 4px 10px;
     text-align: left;
     white-space: nowrap;
+    background: none;
   }
 
   // Cabeçalho estilo planilha
   thead {
-    /* border-top: 1px solid #adb2ba; */
     background: #f5f7f9;
 
     th {
@@ -47,7 +51,10 @@
 
   // zebra rows
   tbody tr:nth-child(even) {
-    background: #fcfcfc;
+    /* background: #fcfcfc; */
+
+    /* background: rgba(0, 0, 0, 0.02); */
+    background-color: #e8eaee;
   }
 
   // célula selecionável
@@ -74,16 +81,60 @@
   }
 }
 
+tr > td:first-child,
+tr > th:first-child {
+  border-left: none;
+}
+
+tr > td:last-child,
+tr > th:last-child {
+  border-right: none;
+}
+
+tbody > tr:last-child,
+tbody > tr:last-child {
+  border-bottom: none;
+
+  td {
+    border-bottom: none;
+  }
+}
+
 .table-sheet-container {
+  padding-right: 2px;
+  padding-left: 1px;
+  /* border: 1px solid red; */
+
   width: 100%;
   overflow: auto;
-  border-bottom: 1px solid #dadce0;
-  border-left: 1px solid #dadce0;
-  border-right: 1px solid #dadce0;
+  /* border-bottom: 1px solid #dadce0; */
+  /* border-left: 1px solid #dadce0; */
+  /* border-right: 1px solid #dadce0; */
   height: 96%;
   outline: none; /* evita outline genérico */
 }
 
+.table-sheet-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* trilho */
+.table-sheet-container::-webkit-scrollbar-track {
+  /* background: #f1f1f1; */
+  background: none;
+  position: relative;
+}
+
+/* "thumb" (a barra que mexe) */
+.table-sheet-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+/* hover */
+.table-sheet-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 .table-sheet-container:focus {
   /* outline: 2px solid #4285f4; */
   /* box-shadow: 0 0 0 2px #bcdffb66; */
@@ -91,8 +142,9 @@
 
 .cell-selected {
   outline: 2px solid #1a73e8;
+  outline-style: dashed;
   outline-offset: -2px;
-  background: #e8f0fe;
+  background: rgba(232, 240, 243, 0.9);
 }
 
 .td-values {
@@ -109,17 +161,11 @@
 }
 
 .invalid {
-  background: #e65637 !important;
-  color: white;
-}
-
-.gambi {
-  height: 1px;
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  width: 100%;
-  background: #dadce0;
+  /* background: #e65637 !important; */
+  border: 1px dashed #e65637;
+  background: rgba(230, 86, 55, 0.3);
+  color: black;
+  /* color: white; */
 }
 
 .teste {
