@@ -1,6 +1,8 @@
 export interface BaseResponse {
   hash: string;
   descricao: string;
+  /** Campos extras opcionais retornados pelo backend (ex: cpf do professor) */
+  [key: string]: any;
 }
 
 export interface TableData {
@@ -85,6 +87,16 @@ export interface ColunaImportacao {
 
   /** Colunas que devem ser validadas antes desta */
   depends?: string[];
+
+  /**
+   * Função de atualização customizada chamada após o usuário selecionar uma opção nesta coluna.
+   * Permite propagar dados para outras colunas (ex: ao selecionar professor, atualizar CPF).
+   *
+   * @param option - A opção selecionada pelo usuário (com todos os campos extras do backend)
+   * @param rows - Todas as linhas da tabela, para edição direta dos valores das células
+   * @param linhas - Índices das linhas afetadas pela seleção
+   */
+  updateFn?: (options: BaseResponse[], option: BaseResponse, rows: RowData[], linhas: number[]) => void;
 }
 
 export interface RefDataImportacao {
@@ -101,6 +113,7 @@ export interface EtapaImportacao {
 }
 
 export interface ConfiguracaoImportacao {
+  buildRequest?: (rows: RowData[]) => any[];
   baseUrl: string;
   colunas: ColunaImportacao[];
   refData: RefDataImportacao;

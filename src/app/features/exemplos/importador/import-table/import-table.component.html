@@ -1,5 +1,7 @@
 <div class="teste">
-  <span class="table-title"><b>Cargas Iniciais - Alocacao de Professores</b></span>
+  <span class="table-title"
+    ><b>Cargas Iniciais - Alocacao de Professores</b></span
+  >
 
   <div
     #tableContainer
@@ -9,13 +11,24 @@
     (focusin)="focused = true"
     (focusout)="focused = false"
   >
-    <div class="gambi"></div>
-
     <table class="spreadsheet" (clickOutside)="focusOut()">
       <thead>
         <tr>
           <th>N</th>
-          <th *ngFor="let header of data.headers">{{ header }}</th>
+          <th
+            *ngFor="let header of data.headers; let headerIdx = index"
+            [class.coll-selected]="headerIdx == etapaCounter"
+          >
+            <div class="etapa-header">
+              <span> {{ header }} </span>
+              <!-- <span -->
+              <!-- *ngIf="headerIdx == etapaCounter" -->
+              <!-- class="etapa-header-target" -->
+              <!-- > -->
+              <!-- <span class="material-symbols-outlined"> frame_inspect </span> -->
+              <!-- </span> -->
+            </div>
+          </th>
         </tr>
       </thead>
 
@@ -32,7 +45,7 @@
               <span
                 *ngFor="let value of cell.values"
                 class="cell-value"
-                [class.invalid]="!cell.valid"
+                [class.invalid]="!value.valid && colIdx == etapaCounter"
               >
                 {{ value?.value?.length ? value.value : 'campo_vazio' }}
               </span>

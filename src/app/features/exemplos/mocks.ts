@@ -7,14 +7,14 @@ export const mockData = {
     { hash: "2021", descricao: "2021" },
   ],
   professores: [
-    { hash: "PROF-001", descricao: "Maria Silva Santos" },
-    { hash: "PROF-002", descricao: "João Carlos Oliveira" },
-    { hash: "PROF-003", descricao: "Ana Paula Ferreira" },
-    { hash: "PROF-004", descricao: "Carlos Eduardo Lima" },
-    { hash: "PROF-005", descricao: "Fernanda Costa Souza" },
-    { hash: "PROF-006", descricao: "Roberto Almeida Junior" },
-    { hash: "PROF-007", descricao: "Patricia Mendes Rocha" },
-    { hash: "PROF-008", descricao: "Lucas Pereira Santos" },
+    { hash: "PROF-001", descricao: "Maria Silva Santos", cpf: "02362987043" },
+    { hash: "PROF-002", descricao: "João Carlos Oliveira", cpf: "14785236900" },
+    { hash: "PROF-003", descricao: "Ana Paula Ferreira", cpf: "32165498700" },
+    { hash: "PROF-004", descricao: "Carlos Eduardo Lima", cpf: "98741236500" },
+    { hash: "PROF-005", descricao: "Fernanda Costa Souza", cpf: "45678912300" },
+    { hash: "PROF-006", descricao: "Roberto Almeida Junior", cpf: "65432198700" },
+    { hash: "PROF-007", descricao: "Patricia Mendes Rocha", cpf: "78965412300" },
+    { hash: "PROF-008", descricao: "Lucas Pereira Santos", cpf: "12398745600" },
   ],
   redes: [
     {

@@ -1,4 +1,4 @@
-import { ConfiguracaoImportacao } from '../importador.models';
+import { BaseResponse, ConfiguracaoImportacao, RowData } from '../importador.models';
 
 /**
  * Configuração para importação de Cargas Iniciais - Alocação de Professores.
@@ -9,10 +9,72 @@ import { ConfiguracaoImportacao } from '../importador.models';
  * 3. Disciplina - valida contra lista de disciplinas (depende de turma)
  * 4. CPF - skip (apenas formato, sem validação contra lista)
  * 5. Professor - valida contra lista de professores (depende de escola)
+ *               updateFn: ao selecionar professor, atualiza automaticamente a coluna CPF
  */
+
+/**
+ * Atualiza a coluna CPF quando um professor é selecionado.
+ * O CPF real vem do campo `cpf` da opção do professor (retornado pelo backend).
+ * O hash do CPF é o mesmo hash do professor (dado duplicado intencional para manter padrão).
+ */
+const CPF_COL_IDX = 3;
+
+interface BaseProfessor { hash: string; descricao: string; cpf: string }
+
+function atualizarCpfDoProfessor(options: BaseResponse[], option: BaseResponse, rows: RowData[], linhas: number[]): void {
+  const professor: { hash: string, descricao: string, cpf: string } = options.find(x => x.hash == option.hash) as BaseProfessor;
+
+  linhas.forEach(rowIdx => {
+    const row = rows[rowIdx];
+    if (!row) return;
+
+    const cpfCell = row.cells[CPF_COL_IDX];
+    if (!cpfCell) return;
+
+    if (cpfCell.values && cpfCell.values.length > 0) {
+      cpfCell.values.forEach(v => {
+        v.value = professor.cpf;
+        v.normalized = professor.cpf;
+        v.hash = professor.hash;
+        v.valid = true;
+      });
+    } else {
+      cpfCell.values = [{
+        rowIdx,
+        value: professor.cpf,
+        normalized: professor.cpf,
+        original_normalized: professor.cpf,
+        hash: professor.hash,
+        type: 'string',
+        valid: true,
+      }];
+    }
+
+    cpfCell.valid = true;
+  });
+}
+
+function buildRequest(rows: RowData[]) {
+  const request = rows.map((row) => {
+    const getHashes = (colIdx: number): string[] => {
+      const values = row.cells[colIdx]?.values || [];
+      return values.map(v => v.hash || v.value || '').filter(h => h);
+    };
+
+    return {
+      hashEscola: getHashes(0),
+      hashTurma: getHashes(1),
+      hashDisciplina: getHashes(2),
+      hashCPF: getHashes(3),      // CPF usa o próprio valor, não tem hash
+      hashProfessor: getHashes(4),
+    };
+  })
+  return request;
+}
+
 export const configCargasIniciais: ConfiguracaoImportacao = {
   baseUrl: '/cargas-iniciais',
-
+  buildRequest: buildRequest,
   colunas: [
     {
       key: 'escola',
@@ -48,9 +110,9 @@ export const configCargasIniciais: ConfiguracaoImportacao = {
       validators: ['Required', 'Contains'],
       options: [],
       depends: ['escola'],
+      updateFn: atualizarCpfDoProfessor,
     },
   ],
-
   refData: {
     escola: { url: 'refData/escolas', options: [] },
     turma: { url: 'refData/turmas', options: [] },

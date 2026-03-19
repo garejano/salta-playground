@@ -14,16 +14,11 @@
 
     <button
       *ngIf="todosErrosResolvidos"
-      class="auto-button"
-      [class.enabled]="todosErrosResolvidos"
-      [disabled]="!todosErrosResolvidos"
+      class="confirm-button"
       (click)="onValidarEtapa()"
     >
       <span class="material-symbols-outlined">check_circle</span>
-      <span *ngIf="todosErrosResolvidos">Confirmar e avançar</span>
-      <span *ngIf="!todosErrosResolvidos"
-        >{{ errosPendentes }} erros pendentes</span
-      >
+      Confirmar e avançar
     </button>
   </div>
 

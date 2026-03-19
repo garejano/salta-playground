@@ -48,7 +48,6 @@
   border-collapse: collapse;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 13px;
-  box-shadow: $box-shadow-default;
 
   th,
   td {
@@ -56,26 +55,50 @@
     text-align: left;
     white-space: nowrap;
     background: none;
+    border-bottom: 1px solid $color-border-light;
   }
 
   // Cabeçalho
   thead {
-    background: $color-bg-light;
-
     th {
-      height: 20px;
+      height: 24px;
+      font-size: 12px;
       font-weight: 600;
       color: $color-text-secondary;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
       position: sticky;
       top: 0;
       z-index: 2;
       background: $color-bg-header;
+      border-bottom: 2px solid $color-border;
+
+      // Coluna de número de linha
+      &:first-child {
+        color: $color-text-disabled;
+        font-weight: 400;
+        text-align: center;
+        min-width: 36px;
+      }
     }
   }
 
   // Zebra rows
   tbody tr:nth-child(even) {
     background-color: $color-bg-gray;
+  }
+
+  tbody tr:hover {
+    background-color: $color-primary-light;
+  }
+
+  // Coluna de número de linha
+  td:first-child {
+    color: $color-text-disabled;
+    font-size: 11px;
+    text-align: center;
+    min-width: 36px;
+    border-right: 1px solid $color-border-light;
   }
 
   // Célula
@@ -123,9 +146,9 @@ tbody > tr:last-child td {
 // CÉLULAS
 // ============================================
 .cell-selected {
-  outline: 2px dashed $color-primary;
+  outline: 2px solid $color-primary !important;
   outline-offset: -2px;
-  background: rgba($color-primary-light, 0.9);
+  background: $color-primary-light !important;
 }
 
 .td-values {
@@ -139,13 +162,21 @@ tbody > tr:last-child td {
   border-radius: 4px;
 }
 
+// Célula inválida: destaque vermelho no valor
 .invalid {
   border: $border-dashed-error;
   background: $color-error-light;
-  color: $color-text;
+  color: $color-error-dark;
+  font-weight: 500;
+}
+.etapa-header {
+  display: flex;
+  height: 30px;
+  align-items: center;
+  justify-content: space-between;
 }
 
-// Elemento auxiliar (considerar remover se não for necessário)
-.gambi {
-  // TODO: verificar se este elemento é necessário
+.coll-selected {
+  /* color: $color-primary !important; */
+  font-weight: 800 !important;
 }

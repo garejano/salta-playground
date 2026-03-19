@@ -43,7 +43,6 @@
 }
 
 .upload-button {
-  @include button-base;
   @include button-primary;
 }
 
@@ -91,35 +90,15 @@
 }
 
 .submit-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: not-allowed;
+  @include button-base;
   background: $color-bg-gray;
-  color: $color-text-secondary;
-  transition: all 0.2s ease;
-
-  .material-symbols-outlined {
-    font-size: 20px;
-  }
+  color: $color-text-disabled;
+  cursor: not-allowed;
+  box-shadow: none;
 
   &.enabled {
+    @include button-success;
     cursor: pointer;
-    background: $color-primary;
-    color: $color-white;
-
-    &:hover {
-      background: $color-primary-dark;
-    }
-  }
-
-  &:disabled {
-    opacity: 0.7;
   }
 }
 
@@ -140,7 +119,8 @@
 .box-rounded {
   border-radius: 8px;
   padding: 18px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  /* box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; */
+  box-shadow: $box-shadow-default;
   background: $color-white;
 }
 
