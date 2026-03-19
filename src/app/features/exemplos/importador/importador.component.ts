@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ImportadorService } from './importador.service';
 import { ImportTableComponent } from './import-table/import-table.component';
 import { CellInspect } from './cell-inspect/cell-inspect';
-import { raw_data_test } from './raw_table_mock';
+import { raw_data, raw_data_test } from './raw_table_mock';
 import { configCargasIniciais } from './importacoes/cargas-iniciais';
 import {
   BaseResponse,
@@ -153,7 +153,7 @@ export class ImportadorComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private importadorService: ImportadorService
-  ) {}
+  ) { }
 
   // ============================================
   // LIFECYCLE HOOKS
@@ -166,6 +166,7 @@ export class ImportadorComponent implements OnInit {
 
     // TODO: Remover após implementar upload real
     this.tableDataParsed = this.buildTableData(raw_data_test);
+    // this.tableDataParsed = this.buildTableData(raw_data);
     this.validarEtapa();
   }
 
@@ -704,7 +705,7 @@ export class ImportadorComponent implements OnInit {
 
   /**
    * Extrai o payload de hashes de todas as linhas para envio à API.
-   * Cada célula pode conter múltiplos valores (separados por ;), 
+   * Cada célula pode conter múltiplos valores (separados por ;),
    * por isso cada campo é um array.
    * @returns Array de RowPayload com os hashes de cada linha
    */
@@ -742,7 +743,7 @@ export class ImportadorComponent implements OnInit {
     }
 
     const payload = this.extrairPayload();
-    
+
     console.log('='.repeat(50));
     console.log('PAYLOAD PARA IMPORTAÇÃO');
     console.log('='.repeat(50));

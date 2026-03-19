@@ -18,34 +18,34 @@
  */
 export const raw_data_test: (string | number | null)[][] = [
   // Linha 0: Todos os dados válidos
-  ["Freguesia", "5º ano A - M", "Matemática", "12345678901", "Maria Silva Santos"],
+  ["Freguesia;Copacbana", "5 ano A - M", "Matemática; Portugue;Geografi", "12345678901", "Maria Silva Santos"],
 
   // Linha 1: Todos os dados válidos
-  ["Copacabana", "6º ano A - M", "Português", "98765432100", "João Carlos Oliveira"],
+  ["Copacabana", "6 ano A - M", "Português", "98765432100", "João Carlos Oliveira"],
 
   // Linha 2: Todos os dados válidos
-  ["Madureira", "7º ano A - M", "Ciências", "11122233344", "Ana Paula Ferreira"],
+  ["Madureira", "7 ano A - M", "Ciências", "11122233344", "Ana Paula Ferreira"],
 
   // Linha 3: Escola com erro de digitação (Freguesia -> Freguezia)
-  ["Freguezia", "5º ano B - M", "História", "22233344455", "Carlos Eduardo Lima"],
+  ["Freguezia", "5 ano B - M", "História", "22233344455", "Carlos Eduardo Lima"],
 
   // Linha 4: Turma com erro (falta º)
   ["Itaipu", "5 ano A - M", "Geografia", "33344455566", "Fernanda Costa Souza"],
 
   // Linha 5: Disciplina com erro (falta acento)
-  ["Recreio 1", "6º ano B - M", "Matematica", "44455566677", "Roberto Almeida Junior"],
+  ["Recreio 1", "6 ano B - MMM", "Matematica", "44455566677", "Roberto Almeida Junior"],
 
   // Linha 6: Professor com erro de digitação
-  ["Recreio 2", "8º ano A - M", "Inglês", "55566677788", "Maria Silava Santos"],
+  ["Recreio 2", "8 ano A - M", "Inglês", "55566677788", "Maria Silava Santos"],
 
   // Linha 7: Múltiplos erros (escola inexistente + turma com erro)
-  ["Escola Nova", "9 ano A - M", "Educação Física", "66677788899", "Patricia Mendes Rocha"],
+  ["Ilha do Gov", "9 ano A - M", "Educação Física", "66677788899", "Patricia Mendes Rocha"],
 
   // Linha 8: Escola vazia
-  ["", "8º ano B - M", "Artes", "77788899900", "Lucas Pereira Santos"],
+  // ["", "8 ano B - M", "Artes", "77788899900", "Lucas Pereira Santos"],
 
   // Linha 9: Disciplina inexistente (precisa mapeamento manual)
-  ["Ilha do Governador", "9º ano A - M", "Redação", "88899900011", "Maria Silva Santos"],
+  ["Ilha do Governador", "9 ano A - M", "Ingesl", "88899900011", "Maria Silva Santos"],
 ];
 
 /**

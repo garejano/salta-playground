@@ -14,11 +14,17 @@
       <!-- Indicador de progresso das etapas -->
       <div class="progress-section">
         <div class="progress-info">
-          <span class="progress-label">Etapa {{ progressoEtapas.atual }} de {{ progressoEtapas.total }}</span>
+          <span class="progress-label"
+            >Etapa {{ progressoEtapas.atual }} de {{ progressoEtapas.total
+            }}</span
+          >
           <span class="progress-name">{{ etapaAtualConfig?.label }}</span>
         </div>
         <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="progressoEtapas.porcentagem"></div>
+          <div
+            class="progress-fill"
+            [style.width.%]="progressoEtapas.porcentagem"
+          ></div>
         </div>
       </div>
 

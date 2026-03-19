@@ -3,32 +3,35 @@
 // ============================================
 
 // Cores de sucesso
-$color-success: green;
-$color-success-light: rgba(229, 254, 244, 1);
+$color-success: #2e7d32;
+$color-success-dark: #1b5e20;
+$color-success-light: #e8f5e9;
 $color-success-muted: rgba(128, 153, 113, 0.9);
 
 // Cores de erro
-$color-error: #e65637;
-$color-error-light: rgba(253, 220, 215, 1);
-$color-error-dark: #b2503b;
+$color-error: #d32f2f;
+$color-error-light: #ffebee;
+$color-error-dark: #b71c1c;
 
 // Cores primárias
 $color-primary: #1a73e8;
-$color-primary-light: #e8f0fe;
-$color-primary-dark: #0e124e;
+$color-primary-light: #e3f2fd;
+$color-primary-dark: #1565c0;
 
 // Cores de texto
-$color-text: black;
-$color-text-secondary: #444;
-$color-white: white;
+$color-text: #212121;
+$color-text-secondary: #616161;
+$color-text-disabled: #9e9e9e;
+$color-white: #ffffff;
 
 // Cores de fundo
-$color-bg-gray: #e8eaee;
-$color-bg-light: #f5f7f9;
-$color-bg-header: #c3c8d1;
+$color-bg-gray: #f5f5f5;
+$color-bg-light: #fafafa;
+$color-bg-header: #e0e0e0;
 
 // Cores de borda
-$color-border: silver;
+$color-border: #bdbdbd;
+$color-border-light: #e0e0e0;
 
 // Cores de sombra
 $color-shadow-light: rgba(0, 0, 0, 0.02);
@@ -42,7 +45,99 @@ $color-scrollbar-thumb-hover: #555;
 // VARIÁVEIS COMPOSTAS
 // ============================================
 $box-shadow-default:
-  $color-shadow-light 0px 1px 3px 0px,
-  $color-shadow-border 0px 0px 0px 1px;
+  0 1px 1px rgba(0, 0, 0, 0.12),
+  0 1px 1px rgba(0, 0, 0, 0.24);
+$box-shadow-hover:
+  0 2px 3px rgba(0, 0, 0, 0.16),
+  0 2px 4px rgba(0, 0, 0, 0.23);
 $border-dashed-success: 1px dashed $color-success;
 $border-dashed-error: 1px dashed $color-error;
+
+// ============================================
+// MIXINS PARA BOTÕES
+// ============================================
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: $box-shadow-default;
+
+  .material-symbols-outlined {
+    font-size: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    box-shadow: $box-shadow-hover;
+    /* transform: translateY(-1px); */
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: $color-primary;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background: $color-primary-dark;
+  }
+}
+
+@mixin button-success {
+  @include button-base;
+  background: $color-success;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background: $color-success-dark;
+  }
+}
+
+@mixin button-success-light {
+  @include button-base;
+  background: $color-success-light;
+  color: $color-success-dark;
+  border: 1px solid $color-success;
+
+  &:hover:not(:disabled) {
+    background: $color-success;
+    color: $color-white;
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background: $color-white;
+  color: $color-text;
+  border: 1px solid $color-border;
+
+  &:hover:not(:disabled) {
+    background: $color-bg-light;
+    border-color: $color-primary;
+    color: $color-primary;
+  }
+}
+
+@mixin button-disabled {
+  background: $color-bg-gray;
+  color: $color-text-disabled;
+  cursor: not-allowed;
+  box-shadow: none;
+}

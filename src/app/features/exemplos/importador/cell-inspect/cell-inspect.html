@@ -2,140 +2,183 @@
   <!-- Cabeçalho -->
   <div class="header-section">
     <span><b>Coluna: </b>{{ etapa.label }}</span>
-    <span class="error-counter" [class.all-resolved]="todosErrosResolvidos">
-      {{ errosPendentes }}/{{ totalErros }} pendentes
-    </span>
-  </div>
 
-  <!-- Ações -->
-  <div class="info">
-    <span>Valores invalidos</span>
-    <button (click)="autoCorrect()" class="auto-button">
+    <button
+      *ngIf="!todosErrosResolvidos"
+      (click)="autoCorrect()"
+      class="auto-button"
+    >
       <span class="material-symbols-outlined wand-icon">wand_stars</span>
       Aplicar sugestões
     </button>
-  </div>
 
-  <div class="errors">
-    <div class="error-row" *ngFor="let error of etapa.errors | keyvalue">
-      <div
-        class="error-item"
-        [class.error-selected]="erroSelecionado?.idx === error.value.idx"
-        [class.error-resolved]="error.value.resolved"
-      >
-        <div
-          class="error-item-title"
-          [class.title-selected]="erroSelecionado?.idx === error.value.idx"
-          [class.error-selected]="erroSelecionado?.idx === error.value.idx"
-        >
-          <div class="value-and-prox">
-            <div class="label-remove">
-              <!-- Botões de ação -->
-              <ng-container [ngSwitch]="true">
-                <div
-                  *ngSwitchCase="error.value.remove"
-                  (click)="undoRemove(error.value)"
-                  class="button-remove"
-                >
-                  <span class="material-symbols-outlined icon-sm">restore_from_trash</span>
-                </div>
-                <div
-                  *ngSwitchCase="error.value.changed"
-                  (click)="restore(error.value)"
-                  class="button-remove"
-                >
-                  <span class="material-symbols-outlined icon-sm">settings_backup_restore</span>
-                </div>
-                <div
-                  *ngSwitchDefault
-                  (click)="remove(error.value)"
-                  class="button-remove"
-                >
-                  <span class="material-symbols-outlined icon-sm">delete</span>
-                </div>
-              </ng-container>
-
-              <span
-                (click)="toggleErro(error.value)"
-                class="error-label"
-                [title]="error.value.label"
-              >
-                {{ error.value.label }}
-              </span>
-            </div>
-
-            <!-- Proximidade -->
-            <ng-container *ngIf="error.value.proximidade.length > 0">
-              <span class="material-symbols-outlined arrow-prox">arrow_right_alt</span>
-              <span class="first-prox" [title]="error.value.label">
-                {{ error.value.proximidade[0]?.descricao }}
-              </span>
-            </ng-container>
-
-            <span class="error-count" (click)="toggleErro(error.value)"></span>
-          </div>
-
-          <div (click)="toggleErro(error.value)" class="counter-icons">
-            <span class="line-count">
-              <span>{{ error.value.linhas.length }}</span>
-              <span>{{ error.value.linhas.length > 1 ? 'linhas' : 'linha' }}</span>
-            </span>
-
-            <span *ngIf="error.value.proximidade.length" class="prox-count">
-              <span>{{ error.value.proximidade.length }}</span>
-              <span class="material-symbols-outlined wand-icon">wand_stars</span>
-              <span>{{ error.value.proximidade[0].proximidade }}%</span>
-            </span>
-
-            <span
-              class="material-symbols-outlined arrow"
-              [class.rotated]="error.value.idx === erroSelecionado?.idx"
-            >
-              arrow_drop_down
-            </span>
-          </div>
-        </div>
-
-        <div class="error-body" [hidden]="erroSelecionado?.idx !== error.value.idx">
-          <div *ngIf="error.value.proximidade.length > 0" class="proximidade">
-            <span class="sugestao-label">Sugestões</span>
-            <div class="options-list">
-              <div
-                *ngFor="let prox of error.value.proximidade"
-                (click)="selectOption(prox, error.value)"
-                class="select-option"
-              >
-                <span>{{ prox.descricao }}</span>
-                <span class="sugestao-label">{{ prox.proximidade }}%</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="options-list">
-            <div
-              *ngFor="let option of options"
-              (click)="selectOption(option, error.value)"
-              class="select-option"
-            >
-              <span>{{ option.descricao }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Botão de validação -->
-  <div class="validation-section">
     <button
-      class="validate-button"
+      *ngIf="todosErrosResolvidos"
+      class="auto-button"
       [class.enabled]="todosErrosResolvidos"
       [disabled]="!todosErrosResolvidos"
       (click)="onValidarEtapa()"
     >
       <span class="material-symbols-outlined">check_circle</span>
       <span *ngIf="todosErrosResolvidos">Confirmar e avançar</span>
-      <span *ngIf="!todosErrosResolvidos">{{ errosPendentes }} erros pendentes</span>
+      <span *ngIf="!todosErrosResolvidos"
+        >{{ errosPendentes }} erros pendentes</span
+      >
     </button>
+  </div>
+
+  <!-- Ações -->
+  <div class="info">
+    <span>Valores invalidos</span>
+
+    <span class="error-counter" [class.all-resolved]="todosErrosResolvidos">
+      {{ errosPendentes }}/{{ totalErros }} pendentes
+    </span>
+  </div>
+
+  <div>
+    <div class="errors">
+      <div class="error-row" *ngFor="let error of etapa.errors | keyvalue">
+        <div
+          class="error-item"
+          [class.error-selected]="erroSelecionado?.idx === error.value.idx"
+          [class.error-resolved]="error.value.resolved"
+        >
+          <div
+            class="error-item-title"
+            [class.title-selected]="erroSelecionado?.idx === error.value.idx"
+            [class.error-selected]="erroSelecionado?.idx === error.value.idx"
+          >
+            <div class="value-and-prox">
+              <div class="label-remove">
+                <!-- Botões de ação -->
+                <ng-container [ngSwitch]="true">
+                  <div
+                    *ngSwitchCase="error.value.remove"
+                    (click)="undoRemove(error.value)"
+                    class="button-remove"
+                  >
+                    <span class="material-symbols-outlined icon-sm"
+                      >restore_from_trash</span
+                    >
+                  </div>
+                  <div
+                    *ngSwitchCase="error.value.changed"
+                    (click)="restore(error.value)"
+                    class="button-remove"
+                  >
+                    <span class="material-symbols-outlined icon-sm"
+                      >settings_backup_restore</span
+                    >
+                  </div>
+                  <div
+                    *ngSwitchDefault
+                    (click)="remove(error.value)"
+                    class="button-remove"
+                  >
+                    <span class="material-symbols-outlined icon-sm"
+                      >delete</span
+                    >
+                  </div>
+                </ng-container>
+
+                <span
+                  (click)="toggleErro(error.value)"
+                  class="error-label"
+                  [title]="error.value.label"
+                >
+                  {{ error.value.label }}
+                </span>
+              </div>
+
+              <!-- Proximidade -->
+              <ng-container *ngIf="error.value.proximidade.length > 0">
+                <span class="material-symbols-outlined arrow-prox"
+                  >arrow_right_alt</span
+                >
+                <span class="first-prox" [title]="error.value.label">
+                  {{ error.value.proximidade[0]?.descricao }}
+                </span>
+              </ng-container>
+
+              <span
+                class="error-count"
+                (click)="toggleErro(error.value)"
+              ></span>
+            </div>
+
+            <div (click)="toggleErro(error.value)" class="counter-icons">
+              <span class="line-count">
+                <span>{{ error.value.linhas.length }}</span>
+                <span
+                  >{{ error.value.linhas.length > 1 ? 'linhas' : 'linha'
+                  }}</span
+                >
+              </span>
+
+              <span *ngIf="error.value.proximidade.length" class="prox-count">
+                <span>{{ error.value.proximidade.length }}</span>
+                <span class="material-symbols-outlined wand-icon"
+                  >wand_stars</span
+                >
+                <span>{{ error.value.proximidade[0].proximidade }}%</span>
+              </span>
+
+              <span
+                class="material-symbols-outlined arrow"
+                [class.rotated]="error.value.idx === erroSelecionado?.idx"
+              >
+                arrow_drop_down
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="error-body"
+            [hidden]="erroSelecionado?.idx !== error.value.idx"
+          >
+            <div *ngIf="error.value.proximidade.length > 0" class="proximidade">
+              <span class="sugestao-label">Sugestões</span>
+              <div class="options-list">
+                <div
+                  *ngFor="let prox of error.value.proximidade"
+                  (click)="selectOption(prox, error.value)"
+                  class="select-option"
+                >
+                  <span>{{ prox.descricao }}</span>
+                  <span class="sugestao-label">{{ prox.proximidade }}%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="options-list">
+              <div
+                *ngFor="let option of options"
+                (click)="selectOption(option, error.value)"
+                class="select-option"
+              >
+                <span>{{ option.descricao }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão de validação -->
+    <div class="validation-section">
+      <!-- <button -->
+      <!-- class="validate-button" -->
+      <!-- [class.enabled]="todosErrosResolvidos" -->
+      <!-- [disabled]="!todosErrosResolvidos" -->
+      <!-- (click)="onValidarEtapa()" -->
+      <!-- > -->
+      <!-- <span class="material-symbols-outlined">check_circle</span> -->
+      <!-- <span *ngIf="todosErrosResolvidos">Confirmar e avançar</span> -->
+      <!-- <span *ngIf="!todosErrosResolvidos" -->
+      <!-- >{{ errosPendentes }} erros pendentes</span -->
+      <!-- > -->
+      <!-- </button> -->
+    </div>
   </div>
 </div>
