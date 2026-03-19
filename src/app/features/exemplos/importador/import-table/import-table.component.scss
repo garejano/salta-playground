@@ -180,3 +180,7 @@ tbody > tr:last-child td {
   /* color: $color-primary !important; */
   font-weight: 800 !important;
 }
+.changed {
+  border: $border-dashed-success;
+  background: $color-success-light !important;
+}

@@ -101,4 +101,8 @@ export class ImportTableComponent implements OnInit, AfterViewChecked {
     this.cellCursor.row = row;
   }
 
+  valorOriginal(original: string): string {
+    return `Valor original: ${original}`;
+  }
+
 }

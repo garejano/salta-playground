@@ -256,6 +256,8 @@ export class ImportadorComponent implements OnInit {
     const uniqueValues = [...new Set(cellValue.toString().split(this.separator))];
 
     return uniqueValues.map(value => ({
+      original: value,
+      changed: false,
       rowIdx,
       value,
       type: 'string',
@@ -354,7 +356,7 @@ export class ImportadorComponent implements OnInit {
     const label = value.length ? value : 'campo_vazio';
     const proximidade = this.importadorService
       .calcularProximidade(normalized, etapa.options)
-      .filter(x => x.proximidade > 80);
+      .filter(x => x.proximidade > this.configAtual.minProx);
 
     return {
       remove: false,
@@ -436,6 +438,7 @@ export class ImportadorComponent implements OnInit {
       v.normalized = normalize(update.option.descricao);
       v.hash = update.option.hash;
       v.valid = !update.restore;
+      v.changed = !update.restore;
     });
 
     // Atualiza status de validação da célula

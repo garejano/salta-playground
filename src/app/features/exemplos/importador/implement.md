@@ -450,3 +450,16 @@ colunas: [
   como esse metodo eh "customizado" por etapa, ele pode funcionar diferente do metodo de update dos valores padrao
   o objetivo eh que ao selecionar o professor tbm atualizar o cpf dele na coluna de cpf e o hash do cpf vai ser o hash_valida_professor (sei que eh dado duplicado, mas prefiro assim para manter o padrao, o backend vai saber resolver)
   isso deve ser planejado e executado levando em conta que a configuracao de uma importacao pode ser bem diferente da outra.
+
+
+#### Melhorias_B
+
+ no componente import-table quero que o <span> com classe "cell-value"
+ passe a ter indicacao dos status do dado
+ atualmente quando o valor eh invalido o span fica com a classe "invalid"
+
+os demais status devem usar o mesmo scss de invalid mas com cor de fundo diferente para cada status
+- valores invalidos continuam como esta
+- valores que o usuario ajustou devem ter fundo success-light
+  precisa criar um campo "changed" em CellValue e atualizar onde for necessario para fazer
+  -quando os valores forem restaudados para o original, changed deve ficar false

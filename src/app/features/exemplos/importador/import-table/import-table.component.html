@@ -46,6 +46,8 @@
                 *ngFor="let value of cell.values"
                 class="cell-value"
                 [class.invalid]="!value.valid && colIdx == etapaCounter"
+                [class.changed]="value.changed"
+                [title]="valorOriginal(value.original)"
               >
                 {{ value?.value?.length ? value.value : 'campo_vazio' }}
               </span>

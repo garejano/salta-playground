@@ -37,9 +37,12 @@ function atualizarCpfDoProfessor(options: BaseResponse[], option: BaseResponse, 
         v.normalized = professor.cpf;
         v.hash = professor.hash;
         v.valid = true;
+        v.changed = true;
       });
     } else {
       cpfCell.values = [{
+        original: professor.cpf,
+        changed: true,
         rowIdx,
         value: professor.cpf,
         normalized: professor.cpf,
@@ -74,6 +77,7 @@ function buildRequest(rows: RowData[]) {
 
 export const configCargasIniciais: ConfiguracaoImportacao = {
   baseUrl: '/cargas-iniciais',
+  minProx: 90,
   buildRequest: buildRequest,
   colunas: [
     {

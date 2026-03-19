@@ -30,7 +30,8 @@ export interface CellValue {
   value?: any;
   normalized?: any;
   original_normalized?: any;
-
+  original: string;
+  changed: boolean;
   hash?: string;
   type: string;
   valid: boolean;
@@ -114,6 +115,7 @@ export interface EtapaImportacao {
 
 export interface ConfiguracaoImportacao {
   buildRequest?: (rows: RowData[]) => any[];
+  minProx:number;
   baseUrl: string;
   colunas: ColunaImportacao[];
   refData: RefDataImportacao;
