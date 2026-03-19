@@ -171,3 +171,212 @@ Desenvolver o componente `ImportadorComponent` para transformar arquivos XLS/XLS
 ---
 
 *Revisar e aprimorar continuamente conforme desenvolvimento e feedback.*
+
+
+
+
+
+############ 19/03/2026
+
+Contexto: ja tenho dados mocakdo para um testes, preciso de dados novos para testar o fluxo completo.
+- Criar um em @file:raw_table_mock uma nova variavel com dados para importacao, no maximo 10 linhas de dados para a tabela quando parseada
+- o mock dos dados da tabela devem usar os dados do @file:mock.ts para as etapas da tabela em questao
+- a nova tabela mockada deve ter dados validos condizentes com a base @file:mock.ts e tbm dados levemente errados para criar sugestoes durante o buildError
+- o mock deve ter dados para concluir todas as etapas
+- caso necessario crie dados condizentes com o cenario @file:mock.ts
+
+[x] - Analise e Planeje e documente aqui abaixo o fluxo de codigo necessario para
+  - ler mock ou tabela informada pelo usuario (no momento utilizamos os dados mockados)
+  - ler as etapas configuradas para a importacao
+  - gerar os erros para a etapa (se a etapa nao tiver erros, deve passar para a proxima)
+  - se tiver erros, o usuario vai corrigir os erros, depois de todos corrigidos (exibir um botao para validar as alteracoes no componente @cell-inspect)
+  - apos o usuario corrigir e clickar no botao para validar, deve passar para a proxima etapa e iniciar o fluxo de validacao
+  - apos todos as etapas validas deve ter um botao "Enviar dados para importacao" que dispara um metodo em importador-compomnent que futuramente vai enviar os dados para a API
+  - gerar um metodo para extrair apenas os dados hash  de cada celula de cada etapa, mantendo a estrutura exemplo:
+
+  payload = row_payload[]
+
+  row_payload = {
+    hashEscola: string[],
+    hashTurma: string[],
+    hashDisciplina: string[],
+    hashCPF: string[],
+    hashProfessor: string[],
+  }
+
+---
+
+## Documentação do Fluxo de Validação
+
+### 1. Fluxo Principal
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         FLUXO DE IMPORTAÇÃO                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐              │
+│  │ 1. Upload/   │───►│ 2. Build     │───►│ 3. Validar   │              │
+│  │    Mock      │    │    TableData │    │    Etapa     │              │
+│  └──────────────┘    └──────────────┘    └──────┬───────┘              │
+│                                                  │                      │
+│                                                  ▼                      │
+│                                          ┌──────────────┐              │
+│                                          │ Tem erros?   │              │
+│                                          └──────┬───────┘              │
+│                                                 │                       │
+│                         ┌───────────────────────┴───────────────────┐  │
+│                         │ SIM                                   NÃO │  │
+│                         ▼                                           ▼  │
+│                  ┌──────────────┐                         ┌──────────┐ │
+│                  │ 4. Exibir    │                         │ Próxima  │ │
+│                  │    Erros     │                         │ Etapa?   │ │
+│                  └──────┬───────┘                         └────┬─────┘ │
+│                         │                                      │       │
+│                         ▼                                      │       │
+│                  ┌──────────────┐         ┌────────────────────┘       │
+│                  │ 5. Usuário   │         │ SIM              NÃO      │
+│                  │    Corrige   │         ▼                    ▼       │
+│                  └──────┬───────┘  ┌─────────────┐    ┌──────────────┐ │
+│                         │          │ Voltar para │    │ 7. Botão     │ │
+│                         ▼          │ etapa 3     │    │ "Enviar"     │ │
+│                  ┌──────────────┐  └─────────────┘    └──────┬───────┘ │
+│                  │ 6. Validar   │                            │         │
+│                  │    Correções │                            ▼         │
+│                  └──────┬───────┘                     ┌──────────────┐ │
+│                         │                             │ 8. Extrair   │ │
+│                         │ Todos corrigidos?           │    Payload   │ │
+│                         ▼                             └──────┬───────┘ │
+│                  ┌──────────────┐                            │         │
+│                  │ SIM: Próxima │                            ▼         │
+│                  │ NÃO: Voltar  │                     ┌──────────────┐ │
+│                  │     ao 4     │                     │ 9. Enviar    │ │
+│                  └──────────────┘                     │    para API  │ │
+│                                                       └──────────────┘ │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2. Arquivos Envolvidos
+
+| Arquivo | Responsabilidade |
+|---------|------------------|
+| `importador.component.ts` | Orquestra o fluxo, gerencia estado |
+| `importador.service.ts` | Busca refData, calcula proximidade |
+| `cell-inspect.component.ts` | UI de correção de erros |
+| `import-table.component.ts` | Renderização da tabela |
+| `cargas-iniciais.ts` | Configuração das etapas |
+
+### 3. Métodos por Etapa
+
+#### Etapa 1-2: Carregar Dados
+```typescript
+// importador.component.ts
+ngOnInit() {
+  this.tableDataParsed = this.buildTableData(raw_data_test);
+  this.validarEtapa();
+}
+```
+
+#### Etapa 3: Validar Etapa
+```typescript
+// importador.component.ts
+validarEtapa() {
+  const etapa = this.etapaAtualConfig;
+  this.importadorService.obterRefData(this.configAtual, etapa)
+    .subscribe(result => {
+      this.processarRefData(etapa, result);
+      this.buildErrors(etapa);
+      
+      // AUTO-AVANÇAR se não houver erros
+      if (Object.keys(etapa.errors).length === 0) {
+        this.confirmarEtapa();
+      }
+    });
+}
+```
+
+#### Etapa 4-5: Exibir e Corrigir Erros
+```typescript
+// cell-inspect.component.ts
+// O componente exibe os erros agrupados
+// Usuário seleciona uma opção de correção
+selectOption(option, error) {
+  this.onSelect.emit({ option, error });
+}
+```
+
+#### Etapa 6: Validar Correções (NOVO)
+```typescript
+// cell-inspect.component.ts - Adicionar botão "Validar Correções"
+validarCorrecoes() {
+  const etapa = this.etapa;
+  const todosCorrigidos = Object.values(etapa.errors)
+    .every(e => e.resolved || e.remove);
+  
+  if (todosCorrigidos) {
+    this.onValidarEtapa.emit();
+  }
+}
+```
+
+#### Etapa 7-8: Finalizar e Extrair Payload (NOVO)
+```typescript
+// importador.component.ts
+get todasEtapasValidas(): boolean {
+  return this.etapaAtual >= this.etapas.length - 1 &&
+         this.etapaAtualConfig?.errors &&
+         Object.keys(this.etapaAtualConfig.errors).length === 0;
+}
+
+extrairPayload(): RowPayload[] {
+  return this.tableData.rows.map(row => ({
+    hashEscola: row.cells[0].values?.map(v => v.hash) || [],
+    hashTurma: row.cells[1].values?.map(v => v.hash) || [],
+    hashDisciplina: row.cells[2].values?.map(v => v.hash) || [],
+    hashCPF: row.cells[3].values?.map(v => v.value) || [], // CPF não tem hash
+    hashProfessor: row.cells[4].values?.map(v => v.hash) || [],
+  }));
+}
+
+enviarParaImportacao() {
+  const payload = this.extrairPayload();
+  console.log('Payload para API:', payload);
+  // TODO: this.importadorService.enviar(payload).subscribe(...)
+}
+```
+
+### 4. Interface do Payload
+
+```typescript
+// importador.models.ts
+export interface RowPayload {
+  hashEscola: string[];
+  hashTurma: string[];
+  hashDisciplina: string[];
+  hashCPF: string[];
+  hashProfessor: string[];
+}
+```
+
+### 5. Alterações Necessárias
+
+#### cell-inspect.component.ts
+- [x] Adicionar botão "Validar Correções" 
+- [x] Emitir evento `validarEtapa` quando clicado
+- [x] Desabilitar botão se ainda houver erros não resolvidos
+- [x] Adicionar getters: `todosErrosResolvidos`, `errosPendentes`, `totalErros`
+
+#### importador.component.ts
+- [x] Usar `raw_data_test` em vez de `raw_data`
+- [x] Implementar `extrairPayload()`
+- [x] Implementar `enviarParaImportacao()`
+- [x] Adicionar getter `todasEtapasValidas`
+- [x] Adicionar getter `etapaAtualTemErros`
+- [x] Adicionar getter `progressoEtapas`
+- [x] Auto-avançar etapa quando não houver erros (`verificarAutoAvanco()`)
+- [x] Implementar `validarCorrecoesDaEtapa()`
+
+#### importador.component.html
+- [x] Adicionar botão "Enviar dados para importação"
+- [x] Mostrar indicador de progresso das etapas
+- [x] Conectar evento `(validarEtapa)` do cell-inspect

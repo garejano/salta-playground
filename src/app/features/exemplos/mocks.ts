@@ -7,14 +7,14 @@ export const mockData = {
     { hash: "2021", descricao: "2021" },
   ],
   professores: [
-    {
-      "hash": "a22c39f2-91b7-4425-8921-1849090c1804",
-      "descricao": "Jorge"
-    },
-    {
-      "hash": "a43c39f2-91b7-4425-8921-1849090c1804",
-      "descricao": "Raul"
-    },
+    { hash: "PROF-001", descricao: "Maria Silva Santos" },
+    { hash: "PROF-002", descricao: "João Carlos Oliveira" },
+    { hash: "PROF-003", descricao: "Ana Paula Ferreira" },
+    { hash: "PROF-004", descricao: "Carlos Eduardo Lima" },
+    { hash: "PROF-005", descricao: "Fernanda Costa Souza" },
+    { hash: "PROF-006", descricao: "Roberto Almeida Junior" },
+    { hash: "PROF-007", descricao: "Patricia Mendes Rocha" },
+    { hash: "PROF-008", descricao: "Lucas Pereira Santos" },
   ],
   redes: [
     {
@@ -883,14 +883,30 @@ export const mockData = {
     }
   ],
   disciplinas: [
-    { hash: "001", descricao: "Matematica " },
-    { hash: "002", descricao: "Portugues" },
-    { hash: "003", descricao: "Defesa contra as artes das trevas" },
+    { hash: "DISC-001", descricao: "Matemática" },
+    { hash: "DISC-002", descricao: "Português" },
+    { hash: "DISC-003", descricao: "Ciências" },
+    { hash: "DISC-004", descricao: "História" },
+    { hash: "DISC-005", descricao: "Geografia" },
+    { hash: "DISC-006", descricao: "Inglês" },
+    { hash: "DISC-007", descricao: "Educação Física" },
+    { hash: "DISC-008", descricao: "Artes" },
+    { hash: "DISC-009", descricao: "Biologia" },
+    { hash: "DISC-010", descricao: "Física" },
+    { hash: "DISC-011", descricao: "Química" },
+    { hash: "DISC-012", descricao: "Filosofia" },
   ],
   turmas: [
-    { hash: "001", descricao: "Turma 1" },
-    { hash: "002", descricao: "Turma 2" },
-    { hash: "003", descricao: "Turma 3" },
+    { hash: "TURMA-001", descricao: "5º ano A - M" },
+    { hash: "TURMA-002", descricao: "5º ano B - M" },
+    { hash: "TURMA-003", descricao: "6º ano A - M" },
+    { hash: "TURMA-004", descricao: "6º ano B - M" },
+    { hash: "TURMA-005", descricao: "7º ano A - M" },
+    { hash: "TURMA-006", descricao: "7º ano B - M" },
+    { hash: "TURMA-007", descricao: "8º ano A - M" },
+    { hash: "TURMA-008", descricao: "8º ano B - M" },
+    { hash: "TURMA-009", descricao: "9º ano A - M" },
+    { hash: "TURMA-010", descricao: "9º ano B - M" },
   ],
   eventos: [
     { hash: "001", descricao: "Evento 1" },

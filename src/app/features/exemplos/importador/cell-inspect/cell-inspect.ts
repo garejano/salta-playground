@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseResponse, CellCursor, CellData, CellError, ColunaImportacao, UpdateCell } from '../importador.models';
 
@@ -9,17 +9,61 @@ import { BaseResponse, CellCursor, CellData, CellError, ColunaImportacao, Update
   imports: [CommonModule]
 })
 export class CellInspect implements OnInit {
+  // ============================================
+  // INPUTS E OUTPUTS
+  // ============================================
+
   @Input() cursor: CellCursor;
   @Input() etapa: ColunaImportacao;
   @Input() cell: CellData;
-  @Output() update = new EventEmitter<UpdateCell>();
-  @Output() selecionaErro = new EventEmitter<any>();
 
-  error_idx: number = 0;
+  @Output() update = new EventEmitter<UpdateCell>();
+  @Output() selecionaErro = new EventEmitter<CellError | null>();
+  @Output() validarEtapa = new EventEmitter<void>();
+
+  // ============================================
+  // ESTADO DO COMPONENTE
+  // ============================================
+
+  error_idx = 0;
   erroSelecionado?: CellError | null = undefined;
 
-  ngOnInit() {
-    // this.erroSelecionado = Object.values(this.etapa.errors)[0];
+  // ============================================
+  // LIFECYCLE HOOKS
+  // ============================================
+
+  ngOnInit(): void {
+    // Inicialização
+  }
+
+  // ============================================
+  // GETTERS
+  // ============================================
+
+  /**
+   * Verifica se todos os erros foram resolvidos ou removidos
+   */
+  get todosErrosResolvidos(): boolean {
+    if (!this.etapa?.errors) return true;
+    const errors = Object.values(this.etapa.errors);
+    if (errors.length === 0) return true;
+    return errors.every(e => e.resolved || e.remove);
+  }
+
+  /**
+   * Retorna a contagem de erros pendentes
+   */
+  get errosPendentes(): number {
+    if (!this.etapa?.errors) return 0;
+    return Object.values(this.etapa.errors).filter(e => !e.resolved && !e.remove).length;
+  }
+
+  /**
+   * Retorna a contagem total de erros
+   */
+  get totalErros(): number {
+    if (!this.etapa?.errors) return 0;
+    return Object.values(this.etapa.errors).length;
   }
 
   logError(error: { key: string, value: CellError }) {
@@ -92,13 +136,25 @@ export class CellInspect implements OnInit {
     this.selecionaErro.emit(this.erroSelecionado);
   }
 
-  undoRemove(error: CellError) {
+  undoRemove(error: CellError): void {
     error.remove = false;
-    //TODO: Validar qual linha sera atualizar
-    // atualiza linhas via EventEmitter -> ImportadorComponent
     this.erroSelecionado = null;
     this.selecionaErro.emit(this.erroSelecionado);
   }
 
+  // ============================================
+  // VALIDAÇÃO DA ETAPA
+  // ============================================
 
+  /**
+   * Emite evento para validar a etapa atual e avançar.
+   * Só é possível validar quando todos os erros estão resolvidos.
+   */
+  onValidarEtapa(): void {
+    if (!this.todosErrosResolvidos) {
+      console.warn('Ainda existem erros pendentes');
+      return;
+    }
+    this.validarEtapa.emit();
+  }
 }

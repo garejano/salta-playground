@@ -236,3 +236,71 @@
     box-shadow: $box-shadow-default;
   }
 }
+
+// ============================================
+// CABEÇALHO E CONTADOR
+// ============================================
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px;
+}
+
+.error-counter {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: $color-error-light;
+  border: $border-dashed-error;
+  color: $color-text;
+
+  &.all-resolved {
+    background: $color-success-light;
+    border: $border-dashed-success;
+  }
+}
+
+// ============================================
+// SEÇÃO DE VALIDAÇÃO
+// ============================================
+.validation-section {
+  padding: 8px 4px;
+  border-top: 1px solid $color-border;
+  margin-top: auto;
+}
+
+.validate-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 4px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: not-allowed;
+  background: $color-bg-gray;
+  color: $color-text-secondary;
+  transition: all 0.2s ease;
+
+  .material-symbols-outlined {
+    font-size: 20px;
+  }
+
+  &.enabled {
+    cursor: pointer;
+    background: $color-success;
+    color: $color-white;
+
+    &:hover {
+      background: #006400; // dark green
+    }
+  }
+
+  &:disabled {
+    opacity: 0.7;
+  }
+}

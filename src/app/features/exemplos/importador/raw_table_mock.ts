@@ -1,3 +1,56 @@
+/**
+ * Mock de dados para teste completo do fluxo de importação.
+ *
+ * Estrutura: [Escola, Turma, Disciplina, CPF, Professor]
+ *
+ * Cenários de teste incluídos:
+ * - Linha 0-2: Dados válidos (devem passar todas as etapas)
+ * - Linha 3: Escola com erro de digitação ("Freguesia" -> "Freguezia")
+ * - Linha 4: Turma com erro ("5º ano A - M" -> "5 ano A - M")
+ * - Linha 5: Disciplina com erro ("Matemática" -> "Matematica")
+ * - Linha 6: Professor com erro ("Maria Silva Santos" -> "Maria Silava Santos")
+ * - Linha 7: Múltiplos erros (escola + turma)
+ * - Linha 8: Valor vazio em escola
+ * - Linha 9: Disciplina inexistente que precisa ser mapeada
+ *
+ * Os dados são baseados em mockData para garantir que as sugestões
+ * de proximidade funcionem corretamente (>80% de similaridade).
+ */
+export const raw_data_test: (string | number | null)[][] = [
+  // Linha 0: Todos os dados válidos
+  ["Freguesia", "5º ano A - M", "Matemática", "12345678901", "Maria Silva Santos"],
+
+  // Linha 1: Todos os dados válidos
+  ["Copacabana", "6º ano A - M", "Português", "98765432100", "João Carlos Oliveira"],
+
+  // Linha 2: Todos os dados válidos
+  ["Madureira", "7º ano A - M", "Ciências", "11122233344", "Ana Paula Ferreira"],
+
+  // Linha 3: Escola com erro de digitação (Freguesia -> Freguezia)
+  ["Freguezia", "5º ano B - M", "História", "22233344455", "Carlos Eduardo Lima"],
+
+  // Linha 4: Turma com erro (falta º)
+  ["Itaipu", "5 ano A - M", "Geografia", "33344455566", "Fernanda Costa Souza"],
+
+  // Linha 5: Disciplina com erro (falta acento)
+  ["Recreio 1", "6º ano B - M", "Matematica", "44455566677", "Roberto Almeida Junior"],
+
+  // Linha 6: Professor com erro de digitação
+  ["Recreio 2", "8º ano A - M", "Inglês", "55566677788", "Maria Silava Santos"],
+
+  // Linha 7: Múltiplos erros (escola inexistente + turma com erro)
+  ["Escola Nova", "9 ano A - M", "Educação Física", "66677788899", "Patricia Mendes Rocha"],
+
+  // Linha 8: Escola vazia
+  ["", "8º ano B - M", "Artes", "77788899900", "Lucas Pereira Santos"],
+
+  // Linha 9: Disciplina inexistente (precisa mapeamento manual)
+  ["Ilha do Governador", "9º ano A - M", "Redação", "88899900011", "Maria Silva Santos"],
+];
+
+/**
+ * @deprecated Use raw_data_test para testes do fluxo completo
+ */
 export const raw_data =
   [
     [

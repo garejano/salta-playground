@@ -1,15 +1,45 @@
 <div class="importador-container">
+  <!-- Cabeçalho com controles -->
   <div class="control-container">
     <input type="file" hidden #fileInput (change)="onFileSelected($event)" />
-    <div class="upload-button">
-      <button (click)="openFile()">Start</button>
-      <!-- <label> -->
-      <!-- <input type="checkbox" />Filtrar linhas por erro selecionado -->
-      <!-- </label> -->
+
+    <div class="header-controls">
+      <div class="upload-section">
+        <button class="upload-button" (click)="openFile()">
+          <span class="material-symbols-outlined">upload_file</span>
+          Carregar arquivo
+        </button>
+      </div>
+
+      <!-- Indicador de progresso das etapas -->
+      <div class="progress-section">
+        <div class="progress-info">
+          <span class="progress-label">Etapa {{ progressoEtapas.atual }} de {{ progressoEtapas.total }}</span>
+          <span class="progress-name">{{ etapaAtualConfig?.label }}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="progressoEtapas.porcentagem"></div>
+        </div>
+      </div>
+
+      <!-- Botão de enviar -->
+      <div class="submit-section">
+        <button
+          class="submit-button"
+          [class.enabled]="todasEtapasValidas"
+          [disabled]="!todasEtapasValidas"
+          (click)="enviarParaImportacao()"
+        >
+          <span class="material-symbols-outlined">send</span>
+          Enviar dados para importação
+        </button>
+      </div>
     </div>
   </div>
 
+  <!-- Área principal -->
   <div class="table-view">
+    <!-- Tabela -->
     <div class="box-rounded table-container">
       <app-import-table
         [etapaCounter]="etapaAtual"
@@ -18,13 +48,16 @@
       >
       </app-import-table>
     </div>
+
+    <!-- Painel de inspeção -->
     <div class="box-rounded cell-info">
       <cell-inspect
-        [etapa]="getEtapaAtual()"
+        [etapa]="etapaAtualConfig"
         [cell]="selectedCell"
         [cursor]="cellCursor"
         (update)="updateCell($event)"
         (selecionaErro)="selecionaErro($event)"
+        (validarEtapa)="validarCorrecoesDaEtapa()"
       ></cell-inspect>
     </div>
   </div>

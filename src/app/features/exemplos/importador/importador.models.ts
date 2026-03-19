@@ -76,6 +76,7 @@ export interface RefDataImportacao {
 export interface EtapaImportacao {
   key: string;
   depends?: string[];
+  skip?:boolean;
 }
 
 export interface ConfiguracaoImportacao {
@@ -92,6 +93,15 @@ export interface UpdateCell {
   restore: boolean;
 }
 
-// type ImportValidatorFn = (row: RowData,)
-//
+/**
+ * Payload de uma linha para envio à API de importação.
+ * Cada campo contém um array de hashes (suporta múltiplos valores por célula).
+ */
+export interface RowPayload {
+  hashEscola: string[];
+  hashTurma: string[];
+  hashDisciplina: string[];
+  hashCPF: string[];
+  hashProfessor: string[];
+}
 

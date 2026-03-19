@@ -1,5 +1,13 @@
 <div class="cell-inspect-container">
-  <span><b>Coluna: </b>{{ etapa.label }}</span>
+  <!-- Cabeçalho -->
+  <div class="header-section">
+    <span><b>Coluna: </b>{{ etapa.label }}</span>
+    <span class="error-counter" [class.all-resolved]="todosErrosResolvidos">
+      {{ errosPendentes }}/{{ totalErros }} pendentes
+    </span>
+  </div>
+
+  <!-- Ações -->
   <div class="info">
     <span>Valores invalidos</span>
     <button (click)="autoCorrect()" class="auto-button">
@@ -115,5 +123,19 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Botão de validação -->
+  <div class="validation-section">
+    <button
+      class="validate-button"
+      [class.enabled]="todosErrosResolvidos"
+      [disabled]="!todosErrosResolvidos"
+      (click)="onValidarEtapa()"
+    >
+      <span class="material-symbols-outlined">check_circle</span>
+      <span *ngIf="todosErrosResolvidos">Confirmar e avançar</span>
+      <span *ngIf="!todosErrosResolvidos">{{ errosPendentes }} erros pendentes</span>
+    </button>
   </div>
 </div>

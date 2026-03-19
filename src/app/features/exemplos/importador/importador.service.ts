@@ -50,9 +50,9 @@ export class ImportadorService {
 
     switch (etapa.key) {
       case 'escola': return of({ options: mockData.escolas });
-      case 'professores': return of({ options: mockData.professores });
-      case 'turmas': return of({ options: mockData.turmas });
-      case 'disciplinas': return of({ options: mockData.disciplinas });
+      case 'professore': return of({ options: mockData.professores });
+      case 'turma': return of({ options: mockData.turmas });
+      case 'disciplina': return of({ options: mockData.disciplinas });
       default: return of({ options: [] });
     }
   }

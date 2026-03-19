@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ImportadorService } from './importador.service';
 import { ImportTableComponent } from './import-table/import-table.component';
 import { CellInspect } from './cell-inspect/cell-inspect';
-import { raw_data } from './raw_table_mock';
+import { raw_data_test } from './raw_table_mock';
 import { configCargasIniciais } from './importacoes/cargas-iniciais';
 import {
   BaseResponse,
@@ -16,6 +16,7 @@ import {
   ColunaImportacao,
   ConfiguracaoImportacao,
   RowData,
+  RowPayload,
   TableData,
   UpdateCell
 } from './importador.models';
@@ -167,7 +168,7 @@ export class ImportadorComponent implements OnInit {
     this.selecionarTipoImportacao('cargas-iniciais');
 
     // TODO: Remover após implementar upload real
-    this.tableDataParsed = this.buildTableData(raw_data);
+    this.tableDataParsed = this.buildTableData(raw_data_test);
     this.validarEtapa();
   }
 
@@ -197,6 +198,36 @@ export class ImportadorComponent implements OnInit {
    */
   get etapaAtualConfig(): ColunaImportacao | undefined {
     return this.configAtual?.colunas[this.etapaAtual];
+  }
+
+  /**
+   * Verifica se a etapa atual possui erros pendentes
+   */
+  get etapaAtualTemErros(): boolean {
+    const errors = this.etapaAtualConfig?.errors;
+    if (!errors) return false;
+    return Object.values(errors).some(e => !e.resolved && !e.remove);
+  }
+
+  /**
+   * Verifica se todas as etapas foram validadas com sucesso
+   */
+  get todasEtapasValidas(): boolean {
+    // Verifica se estamos na última etapa
+    const isUltimaEtapa = this.etapaAtual >= this.etapas.length - 1;
+    // Verifica se a etapa atual não tem erros pendentes
+    const etapaSemErros = !this.etapaAtualTemErros;
+    return isUltimaEtapa && etapaSemErros;
+  }
+
+  /**
+   * Retorna o progresso atual das etapas (para UI)
+   */
+  get progressoEtapas(): { atual: number; total: number; porcentagem: number } {
+    const total = this.etapas.length;
+    const atual = this.etapaAtual + 1;
+    const porcentagem = Math.round((atual / total) * 100);
+    return { atual, total, porcentagem };
   }
 
   // ============================================
@@ -396,7 +427,8 @@ export class ImportadorComponent implements OnInit {
   // ============================================
 
   /**
-   * Valida a etapa atual da importação
+   * Valida a etapa atual da importação.
+   * Se não houver erros, avança automaticamente para a próxima etapa.
    */
   validarEtapa(): void {
     if (!this.configAtual) return;
@@ -407,7 +439,26 @@ export class ImportadorComponent implements OnInit {
     this.importadorService.obterRefData(this.configAtual, etapa).subscribe(result => {
       this.processarRefData(etapa, result);
       this.buildErrors(etapa);
+
+      // Auto-avançar se não houver erros
+      this.verificarAutoAvanco(etapa);
     });
+  }
+
+  /**
+   * Verifica se a etapa pode avançar automaticamente (sem erros)
+   * @param etapa - Configuração da etapa validada
+   */
+  private verificarAutoAvanco(etapa: ColunaImportacao): void {
+    const temErros = etapa.errors && Object.keys(etapa.errors).length > 0;
+
+    if (!temErros && this.etapaAtual < this.etapas.length - 1) {
+      console.log(`Etapa "${etapa.label}" sem erros. Avançando automaticamente...`);
+      this.etapaAtual++;
+      this.validarEtapa();
+    } else if (!temErros) {
+      console.log('Todas as etapas validadas com sucesso!');
+    }
   }
 
   /**
@@ -606,5 +657,81 @@ export class ImportadorComponent implements OnInit {
    */
   abrirAjuda(): void {
     // Abrir modal de documentação/técnica
+  }
+
+  // ============================================
+  // EXTRAÇÃO DE PAYLOAD
+  // ============================================
+
+  /**
+   * Extrai o payload de hashes de todas as linhas para envio à API.
+   * Cada célula pode conter múltiplos valores (separados por ;), 
+   * por isso cada campo é um array.
+   * @returns Array de RowPayload com os hashes de cada linha
+   */
+  extrairPayload(): RowPayload[] {
+    return this.tableData.rows.map(row => this.extrairPayloadLinha(row));
+  }
+
+  /**
+   * Extrai o payload de uma única linha
+   * @param row - Dados da linha
+   */
+  private extrairPayloadLinha(row: RowData): RowPayload {
+    const getHashes = (colIdx: number): string[] => {
+      const values = row.cells[colIdx]?.values || [];
+      return values.map(v => v.hash || v.value || '').filter(h => h);
+    };
+
+    return {
+      hashEscola: getHashes(0),
+      hashTurma: getHashes(1),
+      hashDisciplina: getHashes(2),
+      hashCPF: getHashes(3),      // CPF usa o próprio valor, não tem hash
+      hashProfessor: getHashes(4),
+    };
+  }
+
+  /**
+   * Envia os dados validados para importação.
+   * Este método será chamado após todas as etapas serem validadas.
+   */
+  enviarParaImportacao(): void {
+    if (!this.todasEtapasValidas) {
+      console.warn('Não é possível enviar: ainda existem etapas com erros');
+      return;
+    }
+
+    const payload = this.extrairPayload();
+    
+    console.log('='.repeat(50));
+    console.log('PAYLOAD PARA IMPORTAÇÃO');
+    console.log('='.repeat(50));
+    console.log(`Total de linhas: ${payload.length}`);
+    console.log('Estrutura:', payload);
+    console.log('='.repeat(50));
+
+    // TODO: Implementar chamada à API
+    // this.importadorService.enviarImportacao(payload).subscribe({
+    //   next: (response) => console.log('Importação realizada com sucesso', response),
+    //   error: (error) => console.error('Erro na importação', error)
+    // });
+  }
+
+  /**
+   * Valida as correções da etapa atual e avança se não houver mais erros.
+   * Este método é chamado pelo componente cell-inspect quando o usuário
+   * clica no botão de validar correções.
+   */
+  validarCorrecoesDaEtapa(): void {
+    if (this.etapaAtualTemErros) {
+      console.warn('Ainda existem erros pendentes nesta etapa');
+      return;
+    }
+
+    // Se não há mais erros, avança para próxima etapa
+    if (this.etapaAtual < this.etapas.length - 1) {
+      this.confirmarEtapa();
+    }
   }
 }

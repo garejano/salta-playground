@@ -19,6 +19,7 @@ export const configCargasIniciais: ConfiguracaoImportacao = {
     { key: 'escolas' },
     { key: 'turmas', depends: ['escolas'] },
     { key: 'disciplinas', depends: ['turmas'] },
+    { key: 'cpf', depends: ['disciplinas'] },
     { key: 'professores', depends: ['escolas'] },
   ]
 };
