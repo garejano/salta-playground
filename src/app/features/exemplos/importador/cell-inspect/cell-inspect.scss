@@ -23,6 +23,10 @@
   cursor: pointer;
 }
 
+.error-resolved {
+  background: rgba(179, 232, 146, 0.5) !important;
+}
+
 .error-item:hover {
   background: rgba(0, 0, 0, 0.02);
 }

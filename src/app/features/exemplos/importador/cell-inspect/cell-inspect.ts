@@ -46,6 +46,7 @@ export class CellInspect implements OnInit {
   }
 
   selectOption(option: BaseResponse | any, error: CellError) {
+    error.resolved = true;
     error.changed = true;
     this.update.emit({
       original_normalized: error.original.normalized,
@@ -53,10 +54,12 @@ export class CellInspect implements OnInit {
       linhas: error.linhas,
       restore: false,
     })
+    error.resolved = true;
   }
 
   restore(error: CellError) {
     error.changed = false;
+    error.resolved = false;
     const option = {
       hash: null,
       descricao: error.original.value
