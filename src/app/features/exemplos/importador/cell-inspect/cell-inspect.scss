@@ -1,3 +1,8 @@
+@use '../variables' as *;
+
+// ============================================
+// ESTILOS
+// ============================================
 .cell-inspect-container {
   user-select: none;
   display: flex;
@@ -7,29 +12,27 @@
 }
 
 .resolved {
-  background: green;
+  background: $color-success;
 }
 
 .error-item {
   width: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 4px 4px 4px 4px;
-  background-color: #e8eaee;
-
-  box-shadow:
-    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
-    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  border-radius: 4px;
+  background-color: $color-bg-gray;
+  box-shadow: $box-shadow-default;
   cursor: pointer;
+
+  &:hover {
+    background: $color-shadow-light;
+  }
 }
 
 .error-resolved {
-  background: rgba(179, 232, 146, 0.5) !important;
+  background: $color-success-light !important;
 }
 
-.error-item:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
 .error-item-title {
   border-radius: 4px;
   padding: 4px;
@@ -37,33 +40,25 @@
 }
 
 .error-label {
-  background: rgba(230, 86, 55, 0.3);
-  border: 1px dashed #e65637;
-  color: black;
-  padding: 2px;
+  background: $color-error-light;
+  border: 1px dashed $color-error;
+  color: $color-text;
+  padding: 2px 8px;
   border-radius: 4px;
-  padding-left: 8px;
-  padding-right: 8px;
   white-space: nowrap;
 }
 
-.error-item-title:hover {
-  /* background: #f5f7f9; */
-}
-
 .title-selected {
-  border-radius: 4px 4px 0px 0px;
+  border-radius: 4px 4px 0 0;
 }
 
 .error-selected {
-  outline: 2px solid #1a73e8;
+  outline: 2px solid $color-primary;
 }
 
 .error-count {
-  padding: 2px;
+  padding: 2px 8px;
   border-radius: 4px;
-  padding-left: 8px;
-  padding-right: 8px;
   font-size: 0.75rem;
   width: 100%;
 }
@@ -91,7 +86,8 @@
   display: flex;
   justify-content: space-between;
   padding: 4px;
-  border-bottom: 1px solid silver;
+  border-bottom: 1px solid $color-border;
+
   span {
     font-size: 12px;
   }
@@ -99,27 +95,26 @@
 
 .auto-button {
   cursor: pointer;
-  border: none;
-  /* color: white; */
+  border: $border-dashed-success;
   border-radius: 4px;
-  padding-left: 4px;
-  padding-right: 8px;
-  /* background: #242cc2; */
-  background: rgba(179, 232, 146, 0.5);
-  border: 1px dashed green;
+  padding: 0 8px 0 4px;
+  background: $color-success-light;
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 16px;
-}
 
-.auto-button:hover {
-  background: #0e124e;
+  &:hover {
+    background: $color-primary-dark;
+  }
 }
 
 .wand-icon {
   font-size: 13px;
-  /* color: green; */
+}
+
+.icon-sm {
+  font-size: 16px;
 }
 
 .counter-icons {
@@ -127,14 +122,14 @@
   gap: 12px;
   align-items: center;
 }
+
 .prox-count {
   display: flex;
   border-radius: 4px;
   font-weight: 700;
-  padding-left: 4px;
-  padding-right: 8px;
-  background: rgba(179, 232, 146, 0.5);
-  border: 1px dashed green;
+  padding: 0 8px 0 4px;
+  background: $color-success-light;
+  border: $border-dashed-success;
   gap: 4px;
   font-size: 10px;
   height: 20px;
@@ -145,22 +140,19 @@
   display: flex;
   border-radius: 4px;
   font-weight: 700;
-  padding-left: 4px;
-  padding-right: 8px;
-  /* background: rgba(179, 232, 146, 0.5); */
-  border: 1px dashed green;
+  padding: 0 8px 0 4px;
+  border: $border-dashed-success;
   gap: 4px;
   font-size: 10px;
   height: 20px;
   align-items: center;
 }
+
 .first-prox {
-  background: rgba(179, 232, 146, 0.5);
-  border: 1px dashed green;
-  padding: 2px;
+  background: $color-success-light;
+  border: $border-dashed-success;
+  padding: 2px 8px;
   border-radius: 4px;
-  padding-left: 8px;
-  padding-right: 8px;
   white-space: nowrap;
 }
 
@@ -171,23 +163,20 @@
 }
 
 .arrow-prox {
-  color: rgba(128, 153, 113, 0.9);
+  color: $color-success-muted;
 }
 
 .error-body {
-  border-top: 1px solid #f5f7f9;
+  border-top: 1px solid $color-bg-light;
   cursor: default;
-  background: white;
-  border-radius: 0px 0px 4px 4px;
+  background: $color-white;
+  border-radius: 0 0 4px 4px;
   min-height: 100px;
-  padding: 4px;
-
   max-height: 300px;
+  padding: 4px;
   overflow-y: scroll;
   overflow-x: hidden;
-  box-shadow:
-    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
-    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  box-shadow: $box-shadow-default;
 }
 
 .options-list {
@@ -206,16 +195,16 @@
   display: flex;
   justify-content: space-between;
   cursor: pointer;
-  border: 1px solid silver;
+  border: 1px solid $color-border;
   border-radius: 4px;
   align-items: center;
   height: 24px;
-  padding: 4px;
+  padding: 4px 4px 4px 8px;
   width: 100%;
-  padding-left: 8px;
 }
+
 .proximidade {
-  border: 1px dashed green;
+  border: $border-dashed-success;
   border-radius: 4px;
 }
 
@@ -237,16 +226,13 @@
 .button-remove {
   display: flex;
   align-items: center;
-  color: #b2503b;
+  color: $color-error-dark;
   width: 30px;
-  border-radius: 4px 0px 0px 4px;
   border-radius: 4px;
   justify-content: center;
-}
 
-.button-remove:hover {
-  background-color: #e8eaee;
-  box-shadow:
-    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
-    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  &:hover {
+    background-color: $color-bg-gray;
+    box-shadow: $box-shadow-default;
+  }
 }

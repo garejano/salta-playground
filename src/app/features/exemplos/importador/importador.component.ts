@@ -1,14 +1,58 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 import { ImportadorService } from './importador.service';
 import { ImportTableComponent } from './import-table/import-table.component';
-import { CommonModule } from '@angular/common';
-import { raw_data } from './raw_table_mock';
 import { CellInspect } from './cell-inspect/cell-inspect';
-import { BaseResponse, CellCursor, CellData, CellError, CellValue, ColunaImportacao, ConfiguracaoImportacao, EtapaImportacao, RowData, TableData, UpdateCell } from './importador.models';
+import { raw_data } from './raw_table_mock';
 import { configCargasIniciais } from './importacoes/cargas-iniciais';
-import { mockData } from '../mocks';
-import { Observable, of } from 'rxjs';
+import {
+  BaseResponse,
+  CellCursor,
+  CellData,
+  CellError,
+  CellValue,
+  ColunaImportacao,
+  ConfiguracaoImportacao,
+  RowData,
+  TableData,
+  UpdateCell
+} from './importador.models';
+
+// ============================================
+// UTILITÁRIOS
+// ============================================
+
+/**
+ * Normaliza uma string para comparação.
+ * Remove acentos, caracteres especiais e normaliza espaços.
+ * @param term - String a ser normalizada
+ * @returns String normalizada em minúsculas
+ */
+function normalize(term: string): string {
+  if (!term) return '';
+
+  return term
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')                            // Remove acentos
+    .replace(/[ªº]/g, '')                                       // Remove indicadores ordinais
+    .replace(/[°]/g, '')                                        // Remove símbolos de grau
+    .replace(/[–—]/g, '-')                                      // Normaliza traços
+    .replace(/['']/g, "'")                                      // Normaliza apóstrofos
+    .replace(/[""]/g, '"')                                      // Normaliza aspas
+    .replace(/[․]/g, '.')                                       // Normaliza pontos especiais
+    .replace(/[،]/g, ',')                                       // Normaliza vírgulas especiais
+    .replace(/[\u00A0\u2000-\u200B\u2028-\u2029\u3000]/g, ' ')  // Normaliza espaços especiais
+    .replace(/[^\w\s\-\.]/g, '')                                // Remove caracteres especiais
+    .replace(/\s+/g, ' ')                                       // Normaliza espaços múltiplos
+    .trim();
+}
+
+// ============================================
+// COMPONENTE
+// ============================================
 
 @Component({
   selector: 'app-importador',
@@ -17,341 +61,550 @@ import { Observable, of } from 'rxjs';
   imports: [ImportTableComponent, CommonModule, CellInspect]
 })
 export class ImportadorComponent implements OnInit {
-  loading: boolean = false;
-  file: File | null = null;
-  isDragging = false;
-  isValidFile: boolean = false;
 
-  separator: string = ";";
-
-  cellCursor: CellCursor = { row: 0, col: 0, }
-
-  fileForm: FormGroup;
-  tipoImportacao: string = '';
-  configAtual: ConfiguracaoImportacao;
-  tiposImportacao: string[] = [];
-  etapas: string[] = [];
-
-  headers: string[] = []
-  parsedOriginal: any;
-  tableDataParsed: any[] = [];
-  errosAgrupados: any[] = [];
-  etapaAtual: number = 0;
-
-  importacaoOptions = [
-    { hash: 1, descricao: "Cargas Iniciais - Alocacao de Professores" }
-  ]
-
-  linhasDoErroAtual: number[] = [];
+  // ============================================
+  // VIEW CHILDREN
+  // ============================================
 
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
 
+  // ============================================
+  // ESTADO DO COMPONENTE
+  // ============================================
+
+  /** Indica se está carregando dados */
+  loading = false;
+
+  /** Arquivo selecionado pelo usuário */
+  file: File | null = null;
+
+  /** Indica se o usuário está arrastando um arquivo sobre a área de drop */
+  isDragging = false;
+
+  /** Indica se o arquivo selecionado é válido */
+  isValidFile = false;
+
+  // ============================================
+  // CONFIGURAÇÃO DA IMPORTAÇÃO
+  // ============================================
+
+  /** Separador de valores nas células (ex: múltiplos professores) */
+  separator = ';';
+
+  /** Tipo de importação selecionado */
+  tipoImportacao = '';
+
+  /** Configuração atual da importação */
+  configAtual: ConfiguracaoImportacao;
+
+  /** Lista de tipos de importação disponíveis */
+  tiposImportacao: string[] = [];
+
+  /** Opções de importação para o select */
+  importacaoOptions = [
+    { hash: 1, descricao: 'Cargas Iniciais - Alocacao de Professores' }
+  ];
+
+  // ============================================
+  // DADOS DA TABELA
+  // ============================================
+
+  /** Cabeçalhos da tabela importada */
+  headers: string[] = [];
+
+  /** Dados originais parseados do arquivo */
+  parsedOriginal: string[][];
+
+  /** Dados da tabela processados */
+  tableDataParsed: RowData[] = [];
+
+  // ============================================
+  // ETAPAS DE VALIDAÇÃO
+  // ============================================
+
+  /** Lista de etapas da importação */
+  etapas: string[] = [];
+
+  /** Índice da etapa atual */
+  etapaAtual = 0;
+
+  /** Erros agrupados por etapa */
+  errosAgrupados: CellError[][] = [];
+
+  // ============================================
+  // SELEÇÃO E NAVEGAÇÃO
+  // ============================================
+
+  /** Posição do cursor na tabela */
+  cellCursor: CellCursor = { row: 0, col: 0 };
+
+  /** Linhas que contêm o erro atualmente selecionado */
+  linhasDoErroAtual: number[] = [];
+
+  // ============================================
+  // FORMULÁRIOS
+  // ============================================
+
+  /** Formulário de upload de arquivo */
+  fileForm: FormGroup;
+
+  // ============================================
+  // CONSTRUTOR
+  // ============================================
+
   constructor(
     private formBuilder: FormBuilder,
-    private importadorService: ImportadorService,
-  ) { }
+    private importadorService: ImportadorService
+  ) {}
 
+  // ============================================
+  // LIFECYCLE HOOKS
+  // ============================================
 
   ngOnInit(): void {
+    this.initForms();
     this.carregarTiposImportacao();
-    this.onTipoImportacaoSelecionada("cargas-iniciais");
+    this.selecionarTipoImportacao('cargas-iniciais');
 
+    // TODO: Remover após implementar upload real
     this.tableDataParsed = this.buildTableData(raw_data);
     this.validarEtapa();
-
-
-    this.startForms();
-
   }
 
-  openFile() {
-    this.fileInput.nativeElement.click();
-  }
+  // ============================================
+  // GETTERS
+  // ============================================
 
+  /**
+   * Retorna os dados formatados para a tabela
+   */
   get tableData(): TableData {
-
-    var data = this.tableDataParsed;
-
-    // if (this.linhasDoErroAtual.length > 0) {
-    //   data = data.filter((r: RowData) => {
-    //     return this.linhasDoErroAtual.includes(r.idx)
-    //   })
-    // }
-
     return {
-      // headers: mock_table.headers,//this.headers,
-      "headers": ["Escola", "Turma", "Disciplina", "CPF do professor", "Nome do professor"],
-      rows: data
-    }
+      headers: ['Escola', 'Turma', 'Disciplina', 'CPF do professor', 'Nome do professor'],
+      rows: this.tableDataParsed
+    };
   }
 
+  /**
+   * Retorna a célula atualmente selecionada
+   */
   get selectedCell(): CellData {
-    return this.tableData.rows[this.cellCursor.row].cells[this.cellCursor.col];
+    return this.tableData.rows[this.cellCursor.row]?.cells[this.cellCursor.col];
   }
 
+  /**
+   * Retorna a configuração da etapa atual
+   */
+  get etapaAtualConfig(): ColunaImportacao | undefined {
+    return this.configAtual?.colunas[this.etapaAtual];
+  }
 
-  startForms() {
+  // ============================================
+  // INICIALIZAÇÃO
+  // ============================================
+
+  /**
+   * Inicializa os formulários do componente
+   */
+  private initForms(): void {
     this.fileForm = this.formBuilder.group({
       fileName: ['', Validators.required],
       fileBytes: ['', Validators.required],
       fileSize: ['', Validators.required],
-      tipoImportacao: [null, Validators.required],
+      tipoImportacao: [null, Validators.required]
     });
   }
 
-  carregarTiposImportacao() {
+  /**
+   * Carrega os tipos de importação disponíveis
+   */
+  private carregarTiposImportacao(): void {
     this.tiposImportacao = this.importadorService.listarTiposImportacao();
   }
 
-  onTipoImportacaoSelecionada(tipo: string) {
+  /**
+   * Seleciona um tipo de importação e carrega sua configuração
+   * @param tipo - Identificador do tipo de importação
+   */
+  selecionarTipoImportacao(tipo: string): void {
     this.tipoImportacao = tipo;
     this.configAtual = configCargasIniciais;
-    // this.importadorService.carregarConfiguracao(tipo);
     this.etapas = this.configAtual?.etapasDaImportacao.map(e => e.key) || [];
+
+    // Reset do estado
     this.etapaAtual = 0;
     this.tableDataParsed = [];
     this.errosAgrupados = [];
   }
 
-  onDragOver(event: DragEvent) {
+  // ============================================
+  // UPLOAD DE ARQUIVO
+  // ============================================
+
+  /**
+   * Abre o seletor de arquivos
+   */
+  openFile(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  /**
+   * Handler para evento de arrastar sobre a área de drop
+   */
+  onDragOver(event: DragEvent): void {
     event.preventDefault();
     this.isDragging = true;
   }
 
-  onDragLeave(event: DragEvent) {
+  /**
+   * Handler para evento de sair da área de drop
+   */
+  onDragLeave(event: DragEvent): void {
     event.preventDefault();
     this.isDragging = false;
   }
 
-  onDrop(event: DragEvent) {
+  /**
+   * Handler para evento de soltar arquivo na área de drop
+   */
+  onDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragging = false;
+
     const files = event.dataTransfer?.files;
-    if (files && files.length > 0) {
+    if (files?.length > 0) {
       this.file = files[0];
       this.processFile(this.file);
     }
   }
 
-  onFileSelected(event: Event) {
+  /**
+   * Handler para seleção de arquivo via input
+   */
+  onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
-    const file = input.files[0];
-    this.file = file;
-    this.processFile(file);
+    if (!input.files?.length) return;
+
+    this.file = input.files[0];
+    this.processFile(this.file);
   }
 
-  processFile(file: File) {
+  /**
+   * Processa o arquivo selecionado
+   * @param file - Arquivo a ser processado
+   */
+  private processFile(file: File): void {
     this.loading = true;
+
+    // Validação do arquivo
     if (!this.importadorService.validarArquivo(file)) {
       this.loading = false;
       return;
     }
-    this.importadorService.parseArquivo(file)
-      .subscribe({
 
-        next: (result: string[][]) => {
-          this.headers = result.shift();
-
-          if (this.headers.length != this.configAtual.colunas.length) {
-            console.log("Tabela nao possui a quantidade de colunas informadas na configuracao")
-          }
-
-          this.parsedOriginal = result;
-          this.tableDataParsed = this.buildTableData(result);
-          this.validarEtapa();
-        },
-        error: (error) => {
-          this.loading = false;
-        },
-        complete: () => {
-          this.loading = false;
-        },
-      });
+    // Parse do arquivo
+    this.importadorService.parseArquivo(file).subscribe({
+      next: (result: string[][]) => this.handleParseSuccess(result),
+      error: () => this.loading = false,
+      complete: () => this.loading = false
+    });
   }
 
+  /**
+   * Processa o resultado do parse do arquivo
+   * @param result - Linhas parseadas do arquivo
+   */
+  private handleParseSuccess(result: string[][]): void {
+    this.headers = result.shift() || [];
 
-  buildTableData(parsed: (string | number)[][]): RowData[] {
-    const tableData = parsed.map((row: (string | number)[], rowIdx: number) => {
-      const cells = Array.from(row).map((cell_string, idx) => {
+    // Validação de colunas
+    if (this.headers.length !== this.configAtual.colunas.length) {
+      console.warn('Tabela não possui a quantidade de colunas esperada pela configuração');
+    }
 
-        var values: CellValue[] = [];
-
-        if (typeof (cell_string) == "string" || typeof (cell_string) == "number") {
-          const unicos = [... new Set(cell_string.toString().split(this.separator))]
-          values = unicos.map((i) => {
-            return {
-              rowIdx: rowIdx,
-              value: i,
-              type: 'string',
-              valid: false,
-              normalized: normalize(i),
-              original_normalized: normalize(i),
-            }
-          })
-        }
-
-        const v: CellData = {
-          rowIdx: rowIdx,
-          idx: idx,
-          values: values,
-          multiple: values.length > 1,
-          valid: true,
-          type: this.configAtual.colunas[idx].key
-        }
-        return v;
-      })
-
-      const row_data: RowData = {
-        idx: rowIdx,
-        cells: cells
-      };
-
-      return row_data
-    })
-
-
-    return tableData
+    this.parsedOriginal = result;
+    this.tableDataParsed = this.buildTableData(result);
+    this.validarEtapa();
   }
 
-  validarEtapa() {
+  // ============================================
+  // CONSTRUÇÃO DOS DADOS DA TABELA
+  // ============================================
+
+  /**
+   * Constrói a estrutura de dados da tabela a partir do CSV parseado
+   * @param parsed - Array de linhas parseadas do arquivo
+   * @returns Array de RowData formatado para a tabela
+   */
+  private buildTableData(parsed: (string | number)[][]): RowData[] {
+    return parsed.map((row, rowIdx) => this.buildRowData(row, rowIdx));
+  }
+
+  /**
+   * Constrói os dados de uma linha da tabela
+   * @param row - Array de valores da linha
+   * @param rowIdx - Índice da linha
+   */
+  private buildRowData(row: (string | number)[], rowIdx: number): RowData {
+    const cells = row.map((cellValue, colIdx) => this.buildCellData(cellValue, rowIdx, colIdx));
+    return { idx: rowIdx, cells };
+  }
+
+  /**
+   * Constrói os dados de uma célula
+   * @param cellValue - Valor da célula (pode conter múltiplos valores separados)
+   * @param rowIdx - Índice da linha
+   * @param colIdx - Índice da coluna
+   */
+  private buildCellData(cellValue: string | number, rowIdx: number, colIdx: number): CellData {
+    const values = this.parseCellValues(cellValue, rowIdx);
+
+    return {
+      rowIdx,
+      idx: colIdx,
+      values,
+      multiple: values.length > 1,
+      valid: true,
+      type: this.configAtual.colunas[colIdx].key
+    };
+  }
+
+  /**
+   * Parseia os valores de uma célula (suporta múltiplos valores separados)
+   * @param cellValue - Valor bruto da célula
+   * @param rowIdx - Índice da linha
+   */
+  private parseCellValues(cellValue: string | number, rowIdx: number): CellValue[] {
+    if (typeof cellValue !== 'string' && typeof cellValue !== 'number') {
+      return [];
+    }
+
+    const uniqueValues = [...new Set(cellValue.toString().split(this.separator))];
+
+    return uniqueValues.map(value => ({
+      rowIdx,
+      value,
+      type: 'string',
+      valid: false,
+      normalized: normalize(value),
+      original_normalized: normalize(value)
+    }));
+  }
+
+  // ============================================
+  // VALIDAÇÃO E ERROS
+  // ============================================
+
+  /**
+   * Valida a etapa atual da importação
+   */
+  validarEtapa(): void {
     if (!this.configAtual) return;
 
-    const etapa = this.getEtapaAtual() as ColunaImportacao;
+    const etapa = this.etapaAtualConfig;
+    if (!etapa) return;
 
-    this.importadorService.obterRefData(this.configAtual, etapa)
-      .subscribe(result => {
-
-        etapa.options = result.options
-        etapa.options_record = Object.fromEntries(
-          result.options.map((x: BaseResponse) => [normalize(x.descricao), x.hash])
-        )
-        this.buildErrors(etapa);
-      });
+    this.importadorService.obterRefData(this.configAtual, etapa).subscribe(result => {
+      this.processarRefData(etapa, result);
+      this.buildErrors(etapa);
+    });
   }
 
-  buildErrors(etapa: ColunaImportacao) {
+  /**
+   * Processa os dados de referência retornados pelo serviço
+   * @param etapa - Configuração da etapa
+   * @param result - Dados de referência
+   */
+  private processarRefData(etapa: ColunaImportacao, result: { options: BaseResponse[] }): void {
+    etapa.options = result.options;
+    etapa.options_record = Object.fromEntries(
+      result.options.map((option: BaseResponse) => [normalize(option.descricao), option.hash])
+    );
+  }
+
+  /**
+   * Constrói os erros de validação para uma etapa
+   * @param etapa - Configuração da etapa a ser validada
+   */
+  private buildErrors(etapa: ColunaImportacao): void {
     etapa.errors = {};
 
-    const cells = this.getColumn(this.tableData.rows, etapa.key)
+    const cells = this.getColumnCells(etapa.key);
+    const uniqueValues = this.getUniqueValuesFromCells(cells);
 
-    const values = cells.flatMap(x => {
-      return x.values?.map(x => { return x.value })
-    })
+    let errorCount = 0;
 
-    const set = new Set(values);
+    uniqueValues.forEach(value => {
+      const normalized = normalize(value);
+      const matchingCells = this.findCellsWithValue(cells, normalized);
+      const existsInOptions = etapa.options_record?.hasOwnProperty(normalized) ?? false;
 
-    var error_count = 0;
-    Array.from(set).forEach((string: string) => {
-      const normalized = normalize(string);
-
-      const result: CellData[] = cells.filter((cell: CellData) => {
-        return cell.values?.some((value: CellValue) => normalized == value.normalized)
-      });
-
-      const existe = etapa.options_record?.hasOwnProperty(normalized) ?? false;
-      const proximidade = this.importadorService.calcularProximidade(normalized, etapa.options)
-        .filter(x => x.proximidade > 80)
-
-
-      if (!existe) {
-        etapa.errors![normalized] = {
-          remove: false,
-          changed: false,
-          idx: error_count,
-          resolved: false,
-          label: string.length ? string : "campo_vazio",
-          normalized: normalized,
-          original: {
-            value: string.length ? string : "campo_vazio",
-            normalized: normalized
-          },
-          linhas: [...new Set(result.map(x => { return x.rowIdx }))],
-          proximidade: normalized.length > 1 ? proximidade : [],
-          open: false,
-        }
-        error_count += 1;
-        result.forEach((x) => {
-          x.valid = false;
-        })
-      } {
-        result.forEach((x) => {
-          x.values?.forEach((v) => {
-            v.hash = etapa.options_record?.[v.normalized]
-          })
-        })
+      if (!existsInOptions) {
+        etapa.errors![normalized] = this.createError(value, normalized, matchingCells, etapa, errorCount);
+        errorCount++;
+        this.markCellsAsInvalid(matchingCells);
+      } else {
+        this.assignHashToMatchingValues(matchingCells, etapa);
       }
-    })
-
+    });
   }
 
-  getColumn(rows: RowData[], type: string) {
-    return rows
+  /**
+   * Cria um objeto de erro para um valor inválido
+   */
+  private createError(
+    value: string,
+    normalized: string,
+    cells: CellData[],
+    etapa: ColunaImportacao,
+    index: number
+  ): CellError {
+    const label = value.length ? value : 'campo_vazio';
+    const proximidade = this.importadorService
+      .calcularProximidade(normalized, etapa.options)
+      .filter(x => x.proximidade > 80);
+
+    return {
+      remove: false,
+      changed: false,
+      idx: index,
+      resolved: false,
+      label,
+      normalized,
+      original: { value: label, normalized },
+      linhas: [...new Set(cells.map(c => c.rowIdx))],
+      proximidade: normalized.length > 1 ? proximidade : [],
+      open: false
+    };
+  }
+
+  /**
+   * Marca as células como inválidas
+   */
+  private markCellsAsInvalid(cells: CellData[]): void {
+    cells.forEach(cell => cell.valid = false);
+  }
+
+  /**
+   * Atribui o hash às células que possuem valores válidos
+   */
+  private assignHashToMatchingValues(cells: CellData[], etapa: ColunaImportacao): void {
+    cells.forEach(cell => {
+      cell.values?.forEach(v => {
+        v.hash = etapa.options_record?.[v.normalized];
+      });
+    });
+  }
+
+  /**
+   * Retorna as células de uma coluna específica
+   * @param columnKey - Identificador da coluna
+   */
+  private getColumnCells(columnKey: string): CellData[] {
+    return this.tableData.rows
       .flatMap(r => r.cells)
-      .filter(c => c.type === type);
+      .filter(c => c.type === columnKey);
   }
 
-
-  confirmarEtapa() {
-    if (this.etapaAtual < this.etapas.length - 1) {
-      this.etapaAtual += 1;
-      this.validarEtapa();
-    }
+  /**
+   * Extrai valores únicos das células
+   */
+  private getUniqueValuesFromCells(cells: CellData[]): Set<string> {
+    const values = cells.flatMap(c => c.values?.map(v => v.value) || []);
+    return new Set(values);
   }
 
-  abrirAjuda() {
+  /**
+   * Encontra células que contêm um valor específico (normalizado)
+   */
+  private findCellsWithValue(cells: CellData[], normalizedValue: string): CellData[] {
+    return cells.filter(cell =>
+      cell.values?.some(v => normalizedValue === v.normalized)
+    );
+  }
+
+  // ============================================
+  // NAVEGAÇÃO DE ETAPAS
+  // ============================================
+
+  /**
+   * Confirma a etapa atual e avança para a próxima
+   */
+  confirmarEtapa(): void {
+    if (this.etapaAtual >= this.etapas.length - 1) return;
+
+    this.etapaAtual++;
+    this.validarEtapa();
+  }
+
+  /**
+   * Retorna a configuração da etapa atual
+   * @deprecated Use o getter etapaAtualConfig
+   */
+  getEtapaAtual(): ColunaImportacao | undefined {
+    return this.etapaAtualConfig;
+  }
+
+  // ============================================
+  // ATUALIZAÇÃO DE CÉLULAS
+  // ============================================
+
+  /**
+   * Atualiza o valor de células baseado em uma correção
+   * @param update - Dados da atualização
+   * @param restore - Se deve restaurar o valor original
+   */
+  updateCell(update: UpdateCell, restore = false): void {
+    update.linhas?.forEach(rowIdx => {
+      const cell = this.tableData.rows[rowIdx]?.cells[this.etapaAtual];
+      if (!cell) return;
+
+      this.updateCellValues(cell, update);
+    });
+  }
+
+  /**
+   * Atualiza os valores de uma célula específica
+   */
+  private updateCellValues(cell: CellData, update: UpdateCell): void {
+    const valuesToChange = cell.values?.filter(v =>
+      v.normalized === update.original_normalized ||
+      v.original_normalized === update.original_normalized
+    );
+
+    valuesToChange?.forEach(v => {
+      v.value = update.option.descricao;
+      v.normalized = normalize(update.option.descricao);
+      v.hash = update.option.hash;
+      v.valid = !update.restore;
+    });
+
+    // Atualiza status de validação da célula
+    const hasInvalidValue = cell.values?.some(v => !v.valid) ?? false;
+    cell.valid = !hasInvalidValue;
+  }
+
+  // ============================================
+  // SELEÇÃO DE ERROS
+  // ============================================
+
+  /**
+   * Seleciona um erro e filtra as linhas da tabela
+   * @param erro - Erro selecionado (ou null para limpar seleção)
+   */
+  selecionaErro(erro: CellError | null): void {
+    this.linhasDoErroAtual = erro?.linhas || [];
+  }
+
+  // ============================================
+  // AÇÕES
+  // ============================================
+
+  /**
+   * Abre o modal de ajuda/documentação
+   * TODO: Implementar
+   */
+  abrirAjuda(): void {
     // Abrir modal de documentação/técnica
   }
-
-  getEtapaAtual(): ColunaImportacao | undefined {
-    return this.configAtual?.colunas[this.etapaAtual];
-  }
-
-  updateCell(update: UpdateCell, restore: boolean = false): void {
-    update.linhas?.forEach((n) => {
-      const cell = this.tableData.rows[n].cells[this.etapaAtual];
-      const cellValues = cell.values;
-
-      const values_to_change = cellValues?.filter((x) => x.normalized == update.original_normalized || x.original_normalized == update.original_normalized)
-
-      values_to_change?.forEach((x) => {
-        x.value = update.option.descricao;
-        x.normalized = normalize(update.option.descricao);
-        x.hash = update.option.hash;
-        x.valid = update.restore ? false : true;
-      })
-
-      const anyInvalid = cellValues?.some(x => !x.valid) ?? false;
-      cell.valid = !anyInvalid;
-
-    })
-  }
-
-  selecionaErro(erro: CellError) {
-    if (erro) {
-      this.linhasDoErroAtual = erro.linhas;
-    } else {
-      this.linhasDoErroAtual = [];
-    }
-  }
-}
-
-
-function normalize(term: string): string {
-  if (!term) return "";
-  return term
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Remove acentos
-    .replace(/[ªº]/g, "") // Remove indicadores ordinais (1ª, 2º)
-    .replace(/[°]/g, "") // Remove símbolos de grau
-    .replace(/[–—]/g, "-") // Normaliza diferentes tipos de traço
-    .replace(/['']/g, "'") // Normaliza apostrofes
-    .replace(/[""]/g, '"') // Normaliza aspas
-    .replace(/[․]/g, ".") // Normaliza pontos especiais
-    .replace(/[،]/g, ",") // Normaliza vírgulas especiais
-    .replace(/[\u00A0\u2000-\u200B\u2028-\u2029\u3000]/g, " ") // Normaliza espaços especiais
-    .replace(/[^\w\s\-\.]/g, "") // Remove caracteres especiais exceto espaços, letras, números, hífens e pontos
-    .replace(/\s+/g, " ") // Normaliza espaços múltiplos
-    .trim();
 }

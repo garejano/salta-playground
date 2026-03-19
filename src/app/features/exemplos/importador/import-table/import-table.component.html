@@ -1,7 +1,6 @@
 <div class="teste">
-  <span class="table-title"
-    ><b>Cargas Iniciais - Alocacao de Professores</b></span
-  >
+  <span class="table-title"><b>Cargas Iniciais - Alocacao de Professores</b></span>
+
   <div
     #tableContainer
     *ngIf="data.headers.length"
@@ -11,32 +10,31 @@
     (focusout)="focused = false"
   >
     <div class="gambi"></div>
+
     <table class="spreadsheet" (clickOutside)="focusOut()">
       <thead>
         <tr>
           <th>N</th>
-          <th *ngFor="let header of data.headers, let idx = index">
-            {{header}}
-          </th>
+          <th *ngFor="let header of data.headers">{{ header }}</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr *ngFor="let row of data.rows, let rowIdx = index">
-          <td>{{row.idx + 1}}</td>
+        <tr *ngFor="let row of data.rows; let rowIdx = index">
+          <td>{{ row.idx + 1 }}</td>
           <td
             #cell
-            [class.cell-selected]="cellSelected(rowIdx,colIdx)"
-            *ngFor="let cell of row.cells, let colIdx = index"
-            (click)="selectCell(rowIdx,colIdx)"
+            *ngFor="let cell of row.cells; let colIdx = index"
+            [class.cell-selected]="cellSelected(rowIdx, colIdx)"
+            (click)="selectCell(rowIdx, colIdx)"
           >
             <div class="td-values">
               <span
+                *ngFor="let value of cell.values"
                 class="cell-value"
                 [class.invalid]="!cell.valid"
-                *ngFor="let value of cell.values"
               >
-                {{value?.value?.length ? value.value : 'campo_vazio'}}
+                {{ value?.value?.length ? value.value : 'campo_vazio' }}
               </span>
             </div>
           </td>

@@ -1,0 +1,48 @@
+// ============================================
+// VARIÁVEIS DE CORES - IMPORTADOR
+// ============================================
+
+// Cores de sucesso
+$color-success: green;
+$color-success-light: rgba(229, 254, 244, 1);
+$color-success-muted: rgba(128, 153, 113, 0.9);
+
+// Cores de erro
+$color-error: #e65637;
+$color-error-light: rgba(253, 220, 215, 1);
+$color-error-dark: #b2503b;
+
+// Cores primárias
+$color-primary: #1a73e8;
+$color-primary-light: #e8f0fe;
+$color-primary-dark: #0e124e;
+
+// Cores de texto
+$color-text: black;
+$color-text-secondary: #444;
+$color-white: white;
+
+// Cores de fundo
+$color-bg-gray: #e8eaee;
+$color-bg-light: #f5f7f9;
+$color-bg-header: #c3c8d1;
+
+// Cores de borda
+$color-border: silver;
+
+// Cores de sombra
+$color-shadow-light: rgba(0, 0, 0, 0.02);
+$color-shadow-border: rgba(27, 31, 35, 0.15);
+
+// Scrollbar
+$color-scrollbar-thumb: #888;
+$color-scrollbar-thumb-hover: #555;
+
+// ============================================
+// VARIÁVEIS COMPOSTAS
+// ============================================
+$box-shadow-default:
+  $color-shadow-light 0px 1px 3px 0px,
+  $color-shadow-border 0px 0px 0px 1px;
+$border-dashed-success: 1px dashed $color-success;
+$border-dashed-error: 1px dashed $color-error;
