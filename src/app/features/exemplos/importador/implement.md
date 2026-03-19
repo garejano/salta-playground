@@ -358,7 +358,7 @@ export interface RowPayload {
 }
 ```
 
-### 5. Alterações Necessárias
+### 5. Alterações Realizadas
 
 #### cell-inspect.component.ts
 - [x] Adicionar botão "Validar Correções" 
@@ -373,10 +373,58 @@ export interface RowPayload {
 - [x] Adicionar getter `todasEtapasValidas`
 - [x] Adicionar getter `etapaAtualTemErros`
 - [x] Adicionar getter `progressoEtapas`
+- [x] Adicionar getter `totalEtapas`
+- [x] Adicionar getter `etapaAtualDeveSerPulada`
 - [x] Auto-avançar etapa quando não houver erros (`verificarAutoAvanco()`)
 - [x] Implementar `validarCorrecoesDaEtapa()`
+- [x] Implementar `marcarColunaComoValida()` para skip
 
 #### importador.component.html
 - [x] Adicionar botão "Enviar dados para importação"
 - [x] Mostrar indicador de progresso das etapas
 - [x] Conectar evento `(validarEtapa)` do cell-inspect
+
+---
+
+## Refatoração: Colunas como Etapas (19/03/2026)
+
+### Mudança de Arquitetura
+
+**Antes:** `etapasDaImportacao` era uma lista separada que referenciava as colunas por key.
+
+**Depois:** As próprias `colunas` são as etapas. Cada coluna pode ter:
+- `skip: boolean` - Se true, pula validação e avança automaticamente
+- `depends: string[]` - Colunas que devem ser validadas antes
+
+### Interface ColunaImportacao Atualizada
+
+```typescript
+export interface ColunaImportacao {
+  key: string;           // Identificador único
+  label: string;         // Label na UI
+  validators: string[];  // Validadores
+  options: BaseResponse[];
+  options_record?: Record<string, string>;
+  errors?: Record<string, CellError>;
+  skip?: boolean;        // NOVO: Pula validação
+  depends?: string[];    // NOVO: Dependências
+}
+```
+
+### Exemplo de Configuração
+
+```typescript
+colunas: [
+  { key: 'escola', label: 'Escola', validators: ['Required', 'Contains'], options: [] },
+  { key: 'turma', label: 'Turma', validators: ['Required', 'Contains'], options: [], depends: ['escola'] },
+  { key: 'cpf', label: 'CPF', validators: ['Required'], options: [], skip: true }, // Pula validação
+  { key: 'professor', label: 'Professor', validators: ['Required', 'Contains'], options: [], depends: ['escola'] },
+]
+```
+
+### Fluxo com Skip
+
+1. Etapa atual é `cpf` com `skip: true`
+2. Sistema chama `marcarColunaComoValida()` em vez de `buildErrors()`
+3. Todas as células da coluna são marcadas como válidas
+4. Sistema avança automaticamente para próxima etapa

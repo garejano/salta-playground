@@ -120,13 +120,10 @@ export class ImportadorComponent implements OnInit {
   tableDataParsed: RowData[] = [];
 
   // ============================================
-  // ETAPAS DE VALIDAÇÃO
+  // ETAPAS DE VALIDAÇÃO (baseadas em colunas)
   // ============================================
 
-  /** Lista de etapas da importação */
-  etapas: string[] = [];
-
-  /** Índice da etapa atual */
+  /** Índice da coluna/etapa atual */
   etapaAtual = 0;
 
   /** Erros agrupados por etapa */
@@ -210,11 +207,18 @@ export class ImportadorComponent implements OnInit {
   }
 
   /**
+   * Retorna o número total de colunas/etapas
+   */
+  get totalEtapas(): number {
+    return this.configAtual?.colunas?.length || 0;
+  }
+
+  /**
    * Verifica se todas as etapas foram validadas com sucesso
    */
   get todasEtapasValidas(): boolean {
     // Verifica se estamos na última etapa
-    const isUltimaEtapa = this.etapaAtual >= this.etapas.length - 1;
+    const isUltimaEtapa = this.etapaAtual >= this.totalEtapas - 1;
     // Verifica se a etapa atual não tem erros pendentes
     const etapaSemErros = !this.etapaAtualTemErros;
     return isUltimaEtapa && etapaSemErros;
@@ -224,10 +228,17 @@ export class ImportadorComponent implements OnInit {
    * Retorna o progresso atual das etapas (para UI)
    */
   get progressoEtapas(): { atual: number; total: number; porcentagem: number } {
-    const total = this.etapas.length;
+    const total = this.totalEtapas;
     const atual = this.etapaAtual + 1;
-    const porcentagem = Math.round((atual / total) * 100);
+    const porcentagem = total > 0 ? Math.round((atual / total) * 100) : 0;
     return { atual, total, porcentagem };
+  }
+
+  /**
+   * Verifica se a etapa atual deve ser pulada (skip: true)
+   */
+  get etapaAtualDeveSerPulada(): boolean {
+    return this.etapaAtualConfig?.skip === true;
   }
 
   // ============================================
@@ -260,7 +271,6 @@ export class ImportadorComponent implements OnInit {
   selecionarTipoImportacao(tipo: string): void {
     this.tipoImportacao = tipo;
     this.configAtual = configCargasIniciais;
-    this.etapas = this.configAtual?.etapasDaImportacao.map(e => e.key) || [];
 
     // Reset do estado
     this.etapaAtual = 0;
@@ -428,6 +438,7 @@ export class ImportadorComponent implements OnInit {
 
   /**
    * Valida a etapa atual da importação.
+   * Se a coluna estiver marcada como skip, avança automaticamente.
    * Se não houver erros, avança automaticamente para a próxima etapa.
    */
   validarEtapa(): void {
@@ -435,6 +446,14 @@ export class ImportadorComponent implements OnInit {
 
     const etapa = this.etapaAtualConfig;
     if (!etapa) return;
+
+    // Se a coluna deve ser pulada, marca células como válidas e avança
+    if (etapa.skip) {
+      console.log(`Etapa "${etapa.label}" marcada como skip. Pulando validação...`);
+      this.marcarColunaComoValida(etapa);
+      this.verificarAutoAvanco(etapa);
+      return;
+    }
 
     this.importadorService.obterRefData(this.configAtual, etapa).subscribe(result => {
       this.processarRefData(etapa, result);
@@ -446,14 +465,34 @@ export class ImportadorComponent implements OnInit {
   }
 
   /**
-   * Verifica se a etapa pode avançar automaticamente (sem erros)
+   * Marca todas as células de uma coluna como válidas (para skip)
+   * @param etapa - Configuração da etapa
+   */
+  private marcarColunaComoValida(etapa: ColunaImportacao): void {
+    const cells = this.getColumnCells(etapa.key);
+    cells.forEach(cell => {
+      cell.valid = true;
+      cell.values?.forEach(v => {
+        v.valid = true;
+        // Para colunas skip, o hash é o próprio valor normalizado
+        v.hash = v.hash || v.value;
+      });
+    });
+    etapa.errors = {};
+  }
+
+  /**
+   * Verifica se a etapa pode avançar automaticamente (sem erros ou skip)
    * @param etapa - Configuração da etapa validada
    */
   private verificarAutoAvanco(etapa: ColunaImportacao): void {
     const temErros = etapa.errors && Object.keys(etapa.errors).length > 0;
+    const deveSkip = etapa.skip === true;
 
-    if (!temErros && this.etapaAtual < this.etapas.length - 1) {
-      console.log(`Etapa "${etapa.label}" sem erros. Avançando automaticamente...`);
+    // Se skip ou sem erros, avança automaticamente
+    if ((deveSkip || !temErros) && this.etapaAtual < this.totalEtapas - 1) {
+      const motivo = deveSkip ? 'marcada como skip' : 'sem erros';
+      console.log(`Etapa "${etapa.label}" ${motivo}. Avançando automaticamente...`);
       this.etapaAtual++;
       this.validarEtapa();
     } else if (!temErros) {
@@ -582,7 +621,7 @@ export class ImportadorComponent implements OnInit {
    * Confirma a etapa atual e avança para a próxima
    */
   confirmarEtapa(): void {
-    if (this.etapaAtual >= this.etapas.length - 1) return;
+    if (this.etapaAtual >= this.totalEtapas - 1) return;
 
     this.etapaAtual++;
     this.validarEtapa();
@@ -730,7 +769,7 @@ export class ImportadorComponent implements OnInit {
     }
 
     // Se não há mais erros, avança para próxima etapa
-    if (this.etapaAtual < this.etapas.length - 1) {
+    if (this.etapaAtual < this.totalEtapas - 1) {
       this.confirmarEtapa();
     }
   }

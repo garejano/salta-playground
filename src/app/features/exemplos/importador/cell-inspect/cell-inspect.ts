@@ -99,6 +99,8 @@ export class CellInspect implements OnInit {
       restore: false,
     })
     error.resolved = true;
+
+    this.erroSelecionado = null;
   }
 
   restore(error: CellError) {

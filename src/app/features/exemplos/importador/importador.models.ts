@@ -57,33 +57,56 @@ export interface CellError {
 }
 
 
+/**
+ * Configuração de uma coluna/etapa de importação.
+ * Cada coluna representa uma etapa de validação.
+ */
 export interface ColunaImportacao {
+  /** Identificador único da coluna */
   key: string;
+
+  /** Label exibido na UI */
   label: string;
+
+  /** Lista de validadores a serem aplicados */
   validators: string[];
+
+  /** Opções válidas para esta coluna (carregadas via refData) */
   options: BaseResponse[];
+
+  /** Mapa normalizado -> hash para busca rápida */
   options_record?: Record<string, string>;
-  errors?: Record<string, CellError>
+
+  /** Erros encontrados na validação */
+  errors?: Record<string, CellError>;
+
+  /** Se true, pula a validação desta coluna e avança automaticamente */
+  skip?: boolean;
+
+  /** Colunas que devem ser validadas antes desta */
+  depends?: string[];
 }
 
 export interface RefDataImportacao {
-  escolas?: { url: string, options: { hash: string, descricao: string }[] };
-  turmas?: { url: string, options: { hash: string, descricao: string }[] };
-  disciplinas?: { url: string, options: { hash: string, descricao: string }[] };
-  professores?: { url: string, options: { hash: string, descricao: string }[] };
+  [key: string]: { url: string; options: { hash: string; descricao: string }[] };
 }
 
+/**
+ * @deprecated Use ColunaImportacao.depends e ColunaImportacao.skip
+ */
 export interface EtapaImportacao {
   key: string;
   depends?: string[];
-  skip?:boolean;
+  skip?: boolean;
 }
 
 export interface ConfiguracaoImportacao {
   baseUrl: string;
   colunas: ColunaImportacao[];
   refData: RefDataImportacao;
-  etapasDaImportacao: EtapaImportacao[];
+
+  /** @deprecated Agora as etapas são as próprias colunas */
+  etapasDaImportacao?: EtapaImportacao[];
 }
 
 export interface UpdateCell {
