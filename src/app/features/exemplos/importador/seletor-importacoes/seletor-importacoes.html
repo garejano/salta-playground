@@ -1,0 +1,18 @@
+<div class="setor-container" *ngFor="let importacaoSetor of importacoes">
+  <span class="setor-label">{{importacaoSetor.setor}}</span>
+  <div class="importacoes-list">
+    <div
+      class="importacao-card"
+      *ngFor="let importacao of importacaoSetor.importacoes"
+    >
+      <div>
+        <b>{{importacao.label}}</b>
+      </div>
+      <div></div>
+      <div class="importacao-footer">
+        Percentual de proximidade:
+        <span class="prox-count">{{importacao.configuracao.minProx}}%</span>
+      </div>
+    </div>
+  </div>
+</div>

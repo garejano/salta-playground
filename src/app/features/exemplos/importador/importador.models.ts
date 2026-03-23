@@ -65,28 +65,13 @@ export interface CellError {
  * Cada coluna representa uma etapa de validação.
  */
 export interface ColunaImportacao {
-  /** Identificador único da coluna */
   key: string;
-
-  /** Label exibido na UI */
   label: string;
-
-  /** Lista de validadores a serem aplicados */
   validators: string[];
-
-  /** Opções válidas para esta coluna (carregadas via refData) */
   options: BaseResponse[];
-
-  /** Mapa normalizado -> hash para busca rápida */
   options_record?: Record<string, string>;
-
-  /** Erros encontrados na validação */
   errors?: Record<string, CellError>;
-
-  /** Se true, pula a validação desta coluna e avança automaticamente */
   skip?: boolean;
-
-  /** Colunas que devem ser validadas antes desta */
   depends?: string[];
 
   /**
@@ -115,7 +100,7 @@ export interface EtapaImportacao {
 
 export interface ConfiguracaoImportacao {
   buildRequest?: (rows: RowData[]) => any[];
-  minProx:number;
+  minProx: number;
   baseUrl: string;
   colunas: ColunaImportacao[];
   refData: RefDataImportacao;

@@ -3,7 +3,14 @@
   <div class="control-container">
     <input type="file" hidden #fileInput (change)="onFileSelected($event)" />
 
-    <div class="header-controls">
+    <div *ngIf="!started" class="header-controls">
+      Selecione o modelo de importacao para iniciar
+    </div>
+
+    <seletor-importacoes [importacoes]="importacoesPorSetor">
+    </seletor-importacoes>
+
+    <div *ngIf="started" class="header-controls">
       <div class="upload-section">
         <button class="upload-button" (click)="openFile()">
           <span class="material-symbols-outlined">upload_file</span>
@@ -44,7 +51,7 @@
   </div>
 
   <!-- Área principal -->
-  <div class="table-view">
+  <div *ngIf="started" class="table-view">
     <!-- Tabela -->
     <div class="box-rounded table-container">
       <app-import-table

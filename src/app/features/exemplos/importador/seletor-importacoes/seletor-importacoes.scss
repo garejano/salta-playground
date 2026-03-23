@@ -1,0 +1,52 @@
+@use "../variables" as *;
+
+.setor-container {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.setor-label {
+  font-size: 24px;
+  font-weight: 200;
+}
+
+.importacoes-list {
+  display: flex;
+  gap: 24px;
+}
+
+.importacao-card {
+  padding: 8px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border-radius: 8px;
+  box-shadow: $box-shadow-default;
+  min-height: 200px;
+}
+
+.prox-count {
+  display: flex;
+  border-radius: 4px;
+  font-weight: 700;
+  padding: 0 8px 0 4px;
+  background: $color-success-light;
+  border: $border-dashed-success;
+  gap: 4px;
+  font-size: 10px;
+  height: 20px;
+  align-items: center;
+}
+
+.importacao-footer {
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

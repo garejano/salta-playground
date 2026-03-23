@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 // import { InfoBaseComponent } from './info-base/info-base.component';
 import { ImportadorComponent } from './importador/importador.component';
 import { ImportTableComponent } from './importador/import-table/import-table.component';
+import { SeletorImportacoes } from './importador/seletor-importacoes/seletor-importacoes';
+// import { SeletorImportacoes } from './importador/seletor-importacoes/seletor-importacoes';
 // import { CellInspect } from './importador/cell-inspect/cell-inspect';
 // import { Spreadsheet } from './importador/spreadsheet/spreadsheet';
 
@@ -24,6 +26,8 @@ import { ImportTableComponent } from './importador/import-table/import-table.com
     // Spreadsheet
 
     // CellInspect
+
+    // SeletorImportacoes
   ],
   imports: [
     CommonModule,
@@ -33,7 +37,8 @@ import { ImportTableComponent } from './importador/import-table/import-table.com
     // SharedModule,
     FormsModule,
     ImportadorComponent,
-    ImportTableComponent
+    ImportTableComponent,
+    SeletorImportacoes,
   ]
 })
 export class ExemplosModule { }

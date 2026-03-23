@@ -20,10 +20,9 @@ import {
   TableData,
   UpdateCell
 } from './importador.models';
+import { SeletorImportacoes } from './seletor-importacoes/seletor-importacoes';
+import { ImportacoesPorSetor, lista_importacoes } from './importacoes/lista-importacoes';
 
-// ============================================
-// UTILITÁRIOS
-// ============================================
 
 function normalize(term: string): string {
   if (!term) return '';
@@ -50,10 +49,12 @@ function normalize(term: string): string {
   selector: 'app-importador',
   templateUrl: './importador.component.html',
   styleUrls: ['./importador.component.scss'],
-  imports: [ImportTableComponent, CommonModule, CellInspect]
+  imports: [ImportTableComponent, SeletorImportacoes, CommonModule, CellInspect]
 })
 export class ImportadorComponent implements OnInit {
+  started: boolean = false;
 
+  importacoesPorSetor: ImportacoesPorSetor[] = lista_importacoes;
 
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
 
@@ -92,10 +93,17 @@ export class ImportadorComponent implements OnInit {
     this.carregarTiposImportacao();
     this.selecionarTipoImportacao('cargas-iniciais');
 
+    // this.starImportacao();
+
+  }
+
+  starImportacao() {
+    this.started = true;
     // TODO: Remover após implementar upload real
     this.tableDataParsed = this.buildTableData(raw_data_test);
     // this.tableDataParsed = this.buildTableData(raw_data);
     this.validarEtapa();
+
   }
 
   get tableData(): TableData {
