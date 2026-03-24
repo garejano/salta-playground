@@ -48,7 +48,8 @@ export interface CellError {
   idx: number;
   resolved: boolean;
   normalized: string;
-  label: string
+  label: string;
+  resolved_value?:string;
   linhas?: number[]
   proximidade?: any[];
   open?: boolean;

@@ -22,6 +22,7 @@ import {
 } from './importador.models';
 import { SeletorImportacoes } from './seletor-importacoes/seletor-importacoes';
 import { ImportacoesPorSetor, lista_importacoes } from './importacoes/lista-importacoes';
+import { carga_pedagogica } from './importacoes/carga-pedagogica';
 
 
 function normalize(term: string): string {
@@ -108,7 +109,8 @@ export class ImportadorComponent implements OnInit {
 
   get tableData(): TableData {
     return {
-      headers: ['Escola', 'Turma', 'Disciplina', 'CPF do professor', 'Nome do professor'],
+      // headers: ['Escola', 'Turma', 'Disciplina', 'CPF do professor', 'Nome do professor'],
+      headers: this.headers,
       rows: this.tableDataParsed
     };
   }
@@ -166,6 +168,8 @@ export class ImportadorComponent implements OnInit {
   selecionarTipoImportacao(tipo: string): void {
     this.tipoImportacao = tipo;
     this.configAtual = configCargasIniciais;
+    // this.configAtual = carga_pedagogica;
+    console.log(this.configAtual)
 
     // Reset do estado
     this.etapaAtual = 0;
@@ -227,6 +231,7 @@ export class ImportadorComponent implements OnInit {
     // Validação de colunas
     if (this.headers.length !== this.configAtual.colunas.length) {
       console.warn('Tabela não possui a quantidade de colunas esperada pela configuração');
+      return;
     }
 
     this.parsedOriginal = result;

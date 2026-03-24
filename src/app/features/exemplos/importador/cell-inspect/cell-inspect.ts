@@ -91,6 +91,7 @@ export class CellInspect implements OnInit {
   }
 
   selectOption(option: BaseResponse | any, error: CellError) {
+    error.resolved_value = option.descricao;
     error.resolved = true;
     error.changed = true;
     this.update.emit({
@@ -143,6 +144,32 @@ export class CellInspect implements OnInit {
     error.remove = false;
     this.erroSelecionado = null;
     this.selecionaErro.emit(this.erroSelecionado);
+  }
+
+  executeAction(error: CellError) {
+    if (error.remove) {
+      this.undoRemove(error)
+      return;
+    }
+
+    if (error.changed) {
+      this.restore(error)
+      return;
+    }
+
+    this.remove(error);
+
+  }
+
+  getActionIcon(error: CellError): string {
+    if (error.remove) {
+      return "restore_from_trash"
+    }
+    if (error.changed) {
+      return "settings_backup_restore"
+    }
+
+    return "delete"
   }
 
   // ============================================

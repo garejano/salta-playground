@@ -149,11 +149,29 @@
 }
 
 .first-prox {
+  display: flex;
   background: $color-success-light;
   border: $border-dashed-success;
   padding: 2px 8px;
   border-radius: 4px;
   white-space: nowrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.prox-label {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: $color-text-disabled;
+}
+
+.text-disabled {
+  color: $color-text-disabled;
+}
+
+.label-disabled {
+  color: $color-text-disabled;
 }
 
 .value-and-prox {
@@ -260,4 +278,63 @@
 .validate-button {
   @include button-success;
   width: 100%;
+}
+
+// ============================================
+// novo error card - copia gabarito
+// ============================================
+
+.error-card-container {
+  /* background: $card-body-bg; */
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.error-card-container.selected {
+  outline: 2px solid $color-primary;
+}
+.error-card {
+  background: $card-bg;
+  border-radius: 8px;
+}
+
+.error-card-header {
+  display: flex;
+  align-items: center;
+}
+
+.card-toggle {
+  display: flex;
+  width: 100%;
+  /* border: 1px solid red; */
+  align-items: center;
+  padding: 4px;
+}
+
+.error-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.error-card-body {
+  display: flex;
+  border-radius: 0px 0px 8px 8px;
+  /* background: $card-body-bg; */
+  max-height: 300px;
+  /* padding: 8px; */
+}
+
+.error-label-details {
+  width: 100%;
+}
+
+.card-line-count {
+  display: flex;
+  border-radius: 4px;
+  font-weight: 700;
+  padding: 0 8px 0 4px;
+  gap: 4px;
+  font-size: 10px;
+  height: 20px;
+  align-items: center;
 }
