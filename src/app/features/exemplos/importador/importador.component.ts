@@ -52,7 +52,7 @@ function normalize(term: string): string {
   imports: [ImportTableComponent, SeletorImportacoes, CommonModule, CellInspect]
 })
 export class ImportadorComponent implements OnInit {
-  started: boolean = false;
+  started: boolean = true;
 
   importacoesPorSetor: ImportacoesPorSetor[] = lista_importacoes;
 
@@ -93,7 +93,7 @@ export class ImportadorComponent implements OnInit {
     this.carregarTiposImportacao();
     this.selecionarTipoImportacao('cargas-iniciais');
 
-    // this.starImportacao();
+    this.starImportacao();
 
   }
 
@@ -257,6 +257,10 @@ export class ImportadorComponent implements OnInit {
   }
 
   private parseCellValues(cellValue: string | number, rowIdx: number): CellValue[] {
+
+    if (cellValue == null || cellValue == undefined || cellValue == "") {
+      console.log("Erro", cellValue)
+    }
     if (typeof cellValue !== 'string' && typeof cellValue !== 'number') {
       return [];
     }

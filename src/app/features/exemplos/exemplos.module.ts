@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { ImportadorComponent } from './importador/importador.component';
 import { ImportTableComponent } from './importador/import-table/import-table.component';
 import { SeletorImportacoes } from './importador/seletor-importacoes/seletor-importacoes';
+import { ScrollContainer } from './scroll-container/scroll-container';
 // import { SeletorImportacoes } from './importador/seletor-importacoes/seletor-importacoes';
 // import { CellInspect } from './importador/cell-inspect/cell-inspect';
 // import { Spreadsheet } from './importador/spreadsheet/spreadsheet';
@@ -24,9 +25,7 @@ import { SeletorImportacoes } from './importador/seletor-importacoes/seletor-imp
     // TelaBaseComponent,
     // InfoBaseComponent,
     // Spreadsheet
-
     // CellInspect
-
     // SeletorImportacoes
   ],
   imports: [
@@ -39,6 +38,7 @@ import { SeletorImportacoes } from './importador/seletor-importacoes/seletor-imp
     ImportadorComponent,
     ImportTableComponent,
     SeletorImportacoes,
+    ScrollContainer,
   ]
 })
 export class ExemplosModule { }

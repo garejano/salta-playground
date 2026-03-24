@@ -1,4 +1,7 @@
 @use "../variables" as *;
+:host {
+  height: 100%;
+}
 
 // ============================================
 // ESTILOS
@@ -17,6 +20,7 @@
 
 .error-item {
   width: 100%;
+  margin-bottom: 12px;
   display: flex;
   flex-direction: column;
   border-radius: 4px;
@@ -87,7 +91,6 @@
   display: flex;
   justify-content: space-between;
   padding: 4px;
-  border-bottom: 1px solid $color-border;
 
   span {
     font-size: 12px;

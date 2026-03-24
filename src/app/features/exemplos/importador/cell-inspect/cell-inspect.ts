@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseResponse, CellCursor, CellData, CellError, ColunaImportacao, UpdateCell } from '../importador.models';
+import { ScrollContainer } from '../../scroll-container/scroll-container';
 
 @Component({
   selector: 'cell-inspect',
   templateUrl: './cell-inspect.html',
   styleUrl: './cell-inspect.scss',
-  imports: [CommonModule]
+  imports: [ScrollContainer, CommonModule]
 })
 export class CellInspect implements OnInit {
   // ============================================

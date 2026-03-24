@@ -7,7 +7,7 @@
       Selecione o modelo de importacao para iniciar
     </div>
 
-    <seletor-importacoes [importacoes]="importacoesPorSetor">
+    <seletor-importacoes *ngIf="!started" [importacoes]="importacoesPorSetor">
     </seletor-importacoes>
 
     <div *ngIf="started" class="header-controls">
