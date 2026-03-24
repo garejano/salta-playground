@@ -239,7 +239,9 @@ export class ImportadorComponent implements OnInit {
   }
 
   private buildRowData(row: (string | number)[], rowIdx: number): RowData {
-    const cells = row.map((cellValue, colIdx) => this.buildCellData(cellValue, rowIdx, colIdx));
+    //Valores podem vir em "branco/empty" na cell,substitui por string vazia
+    const no_empty = Array.from(row, v => v ?? '');
+    const cells = no_empty.map((cellValue, colIdx) => this.buildCellData(cellValue, rowIdx, colIdx));
     return { idx: rowIdx, cells };
   }
 
@@ -258,9 +260,6 @@ export class ImportadorComponent implements OnInit {
 
   private parseCellValues(cellValue: string | number, rowIdx: number): CellValue[] {
 
-    if (cellValue == null || cellValue == undefined || cellValue == "") {
-      console.log("Erro", cellValue)
-    }
     if (typeof cellValue !== 'string' && typeof cellValue !== 'number') {
       return [];
     }
