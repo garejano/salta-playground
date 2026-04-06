@@ -3,12 +3,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { ImportadorService } from './importador.service';
+import { ImportadorValidacaoService } from './importador-validacao.service';
 import { ImportTableComponent } from './import-table/import-table.component';
 import { CellInspect } from './cell-inspect/cell-inspect';
 import { raw_data, raw_data_test } from './raw_table_mock';
 import { configCargasIniciais } from './importacoes/cargas-iniciais';
 import {
-  BaseResponse,
   CellCursor,
   CellData,
   CellError,
@@ -65,7 +65,8 @@ export class ImportadorComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private importadorService: ImportadorService
+    private importadorService: ImportadorService,
+    private validacaoService: ImportadorValidacaoService
   ) { }
 
 
@@ -267,35 +268,19 @@ export class ImportadorComponent implements OnInit {
     const etapa = this.etapaAtualConfig;
     if (!etapa) return;
 
-    // Se a coluna deve ser pulada, marca células como válidas e avança
     if (etapa.skip) {
-      console.log(`Etapa "${etapa.label}" marcada como skip. Pulando validação...`);
-      this.marcarColunaComoValida(etapa);
+      this.validacaoService.marcarColunaComoValida(etapa, this.tableData.rows);
       this.verificarAutoAvanco(etapa);
       return;
     }
 
     this.importadorService.obterRefData(this.configAtual, etapa).subscribe(result => {
-      this.processarRefData(etapa, result);
-      this.buildErrors(etapa);
-
-      // Auto-avançar se não houver erros
+      this.validacaoService.processarRefData(etapa, result);
+      this.validacaoService.buildErrors(etapa, this.tableData.rows, this.configAtual.minProx);
       this.verificarAutoAvanco(etapa);
     });
   }
 
-  private marcarColunaComoValida(etapa: ColunaImportacao): void {
-    const cells = this.getColumnCells(etapa.key);
-    cells.forEach(cell => {
-      cell.valid = true;
-      cell.values?.forEach(v => {
-        v.valid = true;
-        // Para colunas skip, o hash é o próprio valor normalizado
-        v.hash = v.hash || v.value;
-      });
-    });
-    etapa.errors = {};
-  }
   private verificarAutoAvanco(etapa: ColunaImportacao): void {
     const temErros = etapa.errors && Object.keys(etapa.errors).length > 0;
     const deveSkip = etapa.skip === true;
@@ -311,90 +296,6 @@ export class ImportadorComponent implements OnInit {
     }
   }
 
-  private processarRefData(etapa: ColunaImportacao, result: { options: BaseResponse[] }): void {
-    etapa.options = result.options;
-    etapa.options_record = Object.fromEntries(
-      result.options.map((option: BaseResponse) => [normalize(option.descricao), option.hash])
-    );
-  }
-  private buildErrors(etapa: ColunaImportacao): void {
-    etapa.errors = {};
-
-    const cells = this.getColumnCells(etapa.key);
-    const uniqueValues = this.getUniqueValuesFromCells(cells);
-
-    let errorCount = 0;
-
-    uniqueValues.forEach(value => {
-      const normalized = normalize(value);
-      const matchingCells = this.findCellsWithValue(cells, normalized);
-      const existsInOptions = etapa.options_record?.hasOwnProperty(normalized) ?? false;
-
-      if (!existsInOptions) {
-        etapa.errors![normalized] = this.createError(value, normalized, matchingCells, etapa, errorCount);
-        errorCount++;
-        this.markCellsAsInvalid(matchingCells);
-      } else {
-        this.assignHashToMatchingValues(matchingCells, etapa);
-      }
-    });
-  }
-
-  private createError(
-    value: string,
-    normalized: string,
-    cells: CellData[],
-    etapa: ColunaImportacao,
-    index: number
-  ): CellError {
-    const label = value.length ? value : 'campo_vazio';
-    const proximidade = this.importadorService
-      .calcularProximidade(normalized, etapa.options)
-      .filter(x => x.proximidade > this.configAtual.minProx);
-
-    return {
-      remove: false,
-      changed: false,
-      idx: index,
-      resolved: false,
-      label,
-      normalized,
-      original: { value: label, normalized },
-      linhas: [...new Set(cells.map(c => c.rowIdx))],
-      proximidade: normalized.length > 1 ? proximidade : [],
-      open: false
-    };
-  }
-
-  private markCellsAsInvalid(cells: CellData[]): void {
-    cells.forEach(cell => cell.valid = false);
-  }
-
-  private assignHashToMatchingValues(cells: CellData[], etapa: ColunaImportacao): void {
-    cells.forEach(cell => {
-      cell.values?.forEach(v => {
-        v.hash = etapa.options_record?.[v.normalized];
-        v.valid = etapa.options_record?.[v.normalized] !== undefined;
-      });
-    });
-  }
-
-  private getColumnCells(columnKey: string): CellData[] {
-    return this.tableData.rows
-      .flatMap(r => r.cells)
-      .filter(c => c.type === columnKey);
-  }
-
-  private getUniqueValuesFromCells(cells: CellData[]): Set<string> {
-    const values = cells.flatMap(c => c.values?.map(v => v.value) || []);
-    return new Set(values);
-  }
-
-  private findCellsWithValue(cells: CellData[], normalizedValue: string): CellData[] {
-    return cells.filter(cell =>
-      cell.values?.some(v => normalizedValue === v.normalized)
-    );
-  }
   confirmarEtapa(): void {
     if (this.etapaAtual >= this.totalEtapas - 1) return;
 

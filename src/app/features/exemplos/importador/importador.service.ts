@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { mockData } from '../mocks';
-import { BaseResponse, ColunaImportacao, ConfiguracaoImportacao, EtapaImportacao } from './importador.models';
+import { BaseResponse, ColunaImportacao, ConfiguracaoImportacao, ProximidadeResult } from './importador.models';
 import { normalize } from './utils/normalize';
 
 
@@ -43,7 +43,7 @@ export class ImportadorService {
   }
 
 
-  obterRefData(config: ConfiguracaoImportacao, etapa: EtapaImportacao): Observable<any> {
+  obterRefData(config: ConfiguracaoImportacao, etapa: ColunaImportacao): Observable<any> {
     if (!etapa || !config) {
       console.error("configuracao ou etapa null|undefined");
       return of({ options: [] })
@@ -145,7 +145,7 @@ export class ImportadorService {
   calcularProximidade(
     busca: string,
     lista: { hash: string; descricao: string }[]
-  ): { hash?: string; descricao: string; proximidade: number }[] {
+  ): ProximidadeResult[] {
     const buscaNorm = normalize(busca);
 
     return lista.map(item => {

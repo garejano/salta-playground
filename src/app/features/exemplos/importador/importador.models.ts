@@ -5,6 +5,10 @@ export interface BaseResponse {
   [key: string]: any;
 }
 
+export interface ProximidadeResult extends BaseResponse {
+  proximidade: number;
+}
+
 export interface TableData {
   // headers: ColunaImportacao[],
   headers: string[],
@@ -27,9 +31,9 @@ export interface CellData {
 
 export interface CellValue {
   rowIdx: number,
-  value?: any;
-  normalized?: any;
-  original_normalized?: any;
+  value: string;
+  normalized: string;
+  original_normalized: string;
   original: string;
   changed: boolean;
   hash?: string;
@@ -44,20 +48,19 @@ export interface CellCursor {
 }
 
 export interface CellError {
-  remove: boolean;
+  // Dados de domínio
   idx: number;
-  resolved: boolean;
   normalized: string;
   label: string;
-  resolved_value?:string;
-  linhas?: number[]
-  proximidade?: any[];
-  open?: boolean;
-  original: {
-    value: string,
-    normalized: string,
-  },
+  linhas: number[];
+  proximidade: ProximidadeResult[];
+  original: { value: string; normalized: string };
+  // Estado de UI gerenciado pelo CellInspect
+  resolved: boolean;
+  resolved_value?: string;
   changed: boolean;
+  remove: boolean;
+  open: boolean;
 }
 
 
@@ -90,24 +93,12 @@ export interface RefDataImportacao {
   [key: string]: { url: string; options: { hash: string; descricao: string }[] };
 }
 
-/**
- * @deprecated Use ColunaImportacao.depends e ColunaImportacao.skip
- */
-export interface EtapaImportacao {
-  key: string;
-  depends?: string[];
-  skip?: boolean;
-}
-
 export interface ConfiguracaoImportacao {
   buildRequest?: (rows: RowData[]) => any[];
   minProx: number;
   baseUrl: string;
   colunas: ColunaImportacao[];
   refData: RefDataImportacao;
-
-  /** @deprecated Agora as etapas são as próprias colunas */
-  etapasDaImportacao?: EtapaImportacao[];
 }
 
 export interface UpdateCell {
@@ -117,15 +108,5 @@ export interface UpdateCell {
   restore: boolean;
 }
 
-/**
- * Payload de uma linha para envio à API de importação.
- * Cada campo contém um array de hashes (suporta múltiplos valores por célula).
- */
-export interface RowPayload {
-  hashEscola: string[];
-  hashTurma: string[];
-  hashDisciplina: string[];
-  hashCPF: string[];
-  hashProfessor: string[];
-}
+
 
