@@ -6,7 +6,6 @@ import { ImportadorService } from './importador.service';
 import { ImportadorValidacaoService } from './importador-validacao.service';
 import { ImportTableComponent } from './import-table/import-table.component';
 import { CellInspect } from './cell-inspect/cell-inspect';
-import { raw_data, raw_data_test } from './raw_table_mock';
 import { configCargasIniciais } from './importacoes/cargas-iniciais';
 import {
   BaseResponse,
@@ -21,7 +20,8 @@ import {
   UpdateCell
 } from './importador.models';
 import { SeletorImportacoes } from './seletor-importacoes/seletor-importacoes';
-import { ImportacoesPorSetor, lista_importacoes } from './importacoes/lista-importacoes';
+import { GeradorConfig } from './gerador-config/gerador-config';
+import { Importacao, ImportacoesPorSetor, lista_importacoes } from './importacoes/lista-importacoes';
 import { carga_pedagogica } from './importacoes/carga-pedagogica';
 import { normalize } from './utils/normalize';
 
@@ -30,10 +30,10 @@ import { normalize } from './utils/normalize';
   selector: 'app-importador',
   templateUrl: './importador.component.html',
   styleUrls: ['./importador.component.scss'],
-  imports: [ImportTableComponent, SeletorImportacoes, CommonModule, CellInspect]
+  imports: [ImportTableComponent, SeletorImportacoes, CommonModule, CellInspect, GeradorConfig]
 })
 export class ImportadorComponent implements OnInit {
-  started: boolean = true;
+  started = false;
 
   importacoesPorSetor: ImportacoesPorSetor[] = lista_importacoes;
 
@@ -45,6 +45,15 @@ export class ImportadorComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
 
   loading = false;
+  processandoInfo: {
+    stage: 'lendo' | 'validando';
+    fileName: string;
+    totalLinhas: number;
+    etapaLabel: string;
+    etapaIdx: number;
+    totalEtapas: number;
+  } | null = null;
+
   file: File | null = null;
   isDragging = false;
   isValidFile = false;
@@ -74,19 +83,16 @@ export class ImportadorComponent implements OnInit {
   ngOnInit(): void {
     this.initForms();
     this.carregarTiposImportacao();
-    this.selecionarTipoImportacao('cargas-iniciais');
-
-    this.starImportacao();
-
   }
 
-  starImportacao() {
+  onSelecionarImportacao(importacao: Importacao): void {
+    this.configAtual = importacao.configuracao;
+    this.etapaAtual = 0;
+    this.tableDataParsed = [];
+    this.errosAgrupados = [];
+    this.headers = [];
+    this.fileError = null;
     this.started = true;
-    // TODO: Remover após implementar upload real
-    // this.tableDataParsed = this.buildTableData(raw_data_test);
-    this.tableDataParsed = this.buildTableData(raw_data);
-    this.headers = this.configAtual.colunas.map(c => c.label);
-    this.validarEtapa();
   }
 
   get tableData(): TableData {
@@ -190,18 +196,25 @@ export class ImportadorComponent implements OnInit {
 
   private processFile(file: File): void {
     this.loading = true;
+    this.processandoInfo = {
+      stage: 'lendo',
+      fileName: file.name,
+      totalLinhas: 0,
+      etapaLabel: '',
+      etapaIdx: 0,
+      totalEtapas: this.totalEtapas,
+    };
 
-    // Validação do arquivo
     if (!this.importadorService.validarArquivo(file)) {
       this.loading = false;
+      this.processandoInfo = null;
       return;
     }
 
-    // Parse do arquivo
     this.importadorService.parseArquivo(file).subscribe({
       next: (result: string[][]) => this.handleParseSuccess(result),
-      error: () => this.loading = false,
-      complete: () => this.loading = false
+      error: () => { this.loading = false; this.processandoInfo = null; },
+      complete: () => { this.loading = false; this.processandoInfo = null; }
     });
   }
   fileError: string | null = null;
@@ -212,9 +225,19 @@ export class ImportadorComponent implements OnInit {
 
     if (erroHeaders) {
       this.fileError = erroHeaders;
+      this.processandoInfo = null;
       console.warn('[Importador]', erroHeaders);
       return;
     }
+
+    this.processandoInfo = {
+      stage: 'validando',
+      fileName: this.file?.name ?? '',
+      totalLinhas: result.length,
+      etapaLabel: this.configAtual.colunas[0]?.label ?? '',
+      etapaIdx: 1,
+      totalEtapas: this.totalEtapas,
+    };
 
     this.fileError = null;
     this.headers = headersDoArquivo;
@@ -295,6 +318,15 @@ export class ImportadorComponent implements OnInit {
 
     const etapa = this.etapaAtualConfig;
     if (!etapa) return;
+
+    if (this.processandoInfo) {
+      this.processandoInfo = {
+        ...this.processandoInfo,
+        stage: 'validando',
+        etapaLabel: etapa.label,
+        etapaIdx: this.etapaAtual + 1,
+      };
+    }
 
     if (etapa.skip) {
       this.validacaoService.marcarColunaComoValida(etapa, this.tableData.rows);

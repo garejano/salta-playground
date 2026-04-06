@@ -1,0 +1,85 @@
+<ng-container *ngIf="isOpen">
+  <!-- Overlay -->
+  <div class="overlay" (click)="close()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <span class="material-symbols-outlined header-icon">settings</span>
+        <h3>Gerar configuração de importação</h3>
+        <button class="close-btn" (click)="close()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+
+        <!-- Upload -->
+        <div class="upload-section">
+          <label class="upload-label" for="configFileInput">
+            <span class="material-symbols-outlined">upload_file</span>
+            Selecionar planilha
+          </label>
+          <input
+            id="configFileInput"
+            type="file"
+            accept=".xls,.xlsx"
+            hidden
+            (change)="onFileSelected($event)"
+          />
+          <p class="upload-hint">
+            Lê os cabeçalhos e gera a estrutura TypeScript da configuração de importação
+          </p>
+          <div *ngIf="fileError" class="file-error">
+            <span class="material-symbols-outlined">error</span>
+            {{ fileError }}
+          </div>
+        </div>
+
+        <ng-container *ngIf="headers.length > 0">
+
+          <!-- Colunas detectadas -->
+          <div class="preview-section">
+            <span class="section-label">Colunas detectadas ({{ headers.length }})</span>
+            <div class="headers-list">
+              <span class="header-pill" *ngFor="let h of headers">{{ h }}</span>
+            </div>
+          </div>
+
+          <!-- Preview de linhas -->
+          <div class="preview-table-section" *ngIf="previewRows.length > 0">
+            <span class="section-label">Preview — primeiras linhas</span>
+            <div class="preview-table-wrap">
+              <table class="preview-table">
+                <thead>
+                  <tr>
+                    <th *ngFor="let h of headers">{{ h }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of previewRows">
+                    <td *ngFor="let cell of row">{{ cell }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Código gerado -->
+          <div class="code-section">
+            <div class="code-header">
+              <span class="section-label">Código gerado</span>
+              <button class="copy-btn" (click)="copiar()">
+                <span class="material-symbols-outlined">{{ copiado ? 'check' : 'content_copy' }}</span>
+                {{ copiado ? 'Copiado!' : 'Copiar' }}
+              </button>
+            </div>
+            <pre class="code-block"><code>{{ generatedCode }}</code></pre>
+          </div>
+
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</ng-container>

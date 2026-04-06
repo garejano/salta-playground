@@ -107,6 +107,9 @@
 .submit-section {
   flex-shrink: 0;
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .submit-button {
@@ -115,6 +118,7 @@
   color: $color-text-disabled;
   cursor: not-allowed;
   box-shadow: none;
+  border: 1px solid $color-border;
 
   &.enabled {
     @include button-success;
@@ -122,16 +126,311 @@
   }
 }
 
+.gear-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid $color-bg-gray;
+  background: $color-white;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: $box-shadow-default;
+  transition: background 0.15s, color 0.15s, transform 0.2s;
+  flex-shrink: 0;
+
+  .material-symbols-outlined {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+    transform: rotate(30deg);
+  }
+}
+
+// Back button
+.back-button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid $color-border-light;
+  background: $color-white;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  .material-symbols-outlined { font-size: 18px; }
+
+  &:hover:not(:disabled) {
+    background: $color-bg-gray;
+    color: $color-text;
+    border-color: $color-border;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================
+// ÁREA PRINCIPAL (flex filho que cresce)
+// ============================================
+.main-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+// ============================================
+// SELETOR (ocupa toda a área principal)
+// ============================================
+.seletor-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+// ============================================
+// EMPTY STATE (sem arquivo)
+// ============================================
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  color: $color-text-secondary;
+}
+
+.empty-icon {
+  font-size: 56px;
+  color: $color-primary;
+  opacity: 0.3;
+}
+
+.empty-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: $color-text;
+}
+
+.empty-subtitle {
+  margin: 0;
+  font-size: 13px;
+  max-width: 380px;
+  line-height: 1.6;
+}
+
+// ============================================
+// LOADING STATE (processando arquivo)
+// ============================================
+.loading-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner-ring {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border: 4px solid $color-primary-light;
+  border-top-color: $color-primary;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.loading-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: $color-text;
+}
+
+.loading-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: $color-text-secondary;
+}
+
+.loading-file-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.loading-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+
+  .material-symbols-outlined { font-size: 14px; }
+
+  &--file {
+    background: $color-bg-gray;
+    border: 1px solid $color-border-light;
+    color: $color-text-secondary;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &--rows {
+    background: $color-primary-light;
+    border: 1px solid #90caf9;
+    color: $color-primary-dark;
+  }
+
+  &--cols {
+    background: $color-success-light;
+    border: 1px solid #a5d6a7;
+    color: $color-success-dark;
+  }
+}
+
+// ============================================
+// ETAPAS DE VALIDAÇÃO (stepper)
+// ============================================
+.loading-etapas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.etapas-track {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.etapa-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+
+  // linha conectora entre steps
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: calc(50% + 12px);
+    width: calc(100% - 4px);
+    height: 2px;
+    background: $color-border-light;
+  }
+
+  &--done::after {
+    background: $color-success-muted;
+  }
+}
+
+.etapa-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid $color-border;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: border-color 0.2s, background 0.2s;
+
+  .etapa-step--done & {
+    background: $color-success-light;
+    border-color: $color-success-muted;
+  }
+
+  .etapa-step--active & {
+    border-color: $color-primary;
+    background: $color-primary-light;
+  }
+}
+
+.etapa-check {
+  font-size: 14px;
+  color: $color-success;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.etapa-spinner {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $color-primary;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.etapa-step-label {
+  font-size: 10px;
+  color: $color-text-disabled;
+  white-space: nowrap;
+  max-width: 64px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  .etapa-step--done & { color: $color-success-dark; }
+  .etapa-step--active & { color: $color-primary; font-weight: 600; }
+}
+
 // ============================================
 // ÁREA DA TABELA
 // ============================================
 .table-view {
+  flex: 1;
   display: flex;
   gap: 12px;
-  flex: 1;
   min-height: 0;
 
-  div {
+  > div {
     flex: 1;
   }
 }
@@ -139,7 +438,6 @@
 .box-rounded {
   border-radius: 8px;
   padding: 18px;
-  /* box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; */
   box-shadow: $box-shadow-default;
   background: $color-white;
 }

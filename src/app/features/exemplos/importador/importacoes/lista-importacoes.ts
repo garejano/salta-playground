@@ -1,4 +1,5 @@
 import { ConfiguracaoImportacao } from "../importador.models";
+import { cargaPedagogicaD2 } from "./carga_pedagogica_d2";
 import { configCargasIniciais } from "./cargas-iniciais";
 
 export enum SetorImportacao {
@@ -20,6 +21,16 @@ export interface ImportacoesPorSetor {
 const importacoes_pedagogico: Importacao[] = [
   {
     label: "Cargas Iniciais",
+    setor: SetorImportacao.Pedagogico,
+    configuracao: configCargasIniciais,
+  },
+  {
+    label: "Carga Pedagógica D-2",
+    setor: SetorImportacao.Pedagogico,
+    configuracao: cargaPedagogicaD2,
+  },
+  {
+    label: "Alocação pedagógica D-10",
     setor: SetorImportacao.Pedagogico,
     configuracao: configCargasIniciais,
   },

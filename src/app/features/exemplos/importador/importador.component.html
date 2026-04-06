@@ -1,18 +1,22 @@
 <div class="importador-container">
+
   <!-- Cabeçalho com controles -->
   <div class="control-container">
     <input type="file" hidden #fileInput (change)="onFileSelected($event)" />
 
-    <div *ngIf="!started" class="header-controls">
-      Selecione o modelo de importacao para iniciar
-    </div>
+    <div class="header-controls">
+      <button
+        class="back-button"
+        [disabled]="!started"
+        [class.btn-disabled]="!started"
+        (click)="started = false"
+        title="Voltar à seleção"
+      >
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
 
-    <seletor-importacoes *ngIf="!started" [importacoes]="importacoesPorSetor">
-    </seletor-importacoes>
-
-    <div *ngIf="started" class="header-controls">
       <div class="upload-section">
-        <button class="upload-button" (click)="openFile()">
+        <button class="upload-button" [disabled]="!started" (click)="openFile()">
           <span class="material-symbols-outlined">upload_file</span>
           Carregar arquivo
         </button>
@@ -23,19 +27,13 @@
       </div>
 
       <!-- Indicador de progresso das etapas -->
-      <div class="progress-section">
+      <div class="progress-section" *ngIf="tableData.rows.length > 0">
         <div class="progress-info">
-          <span class="progress-label"
-            >Etapa {{ progressoEtapas.atual }} de {{ progressoEtapas.total
-            }}</span
-          >
+          <span class="progress-label">Etapa {{ progressoEtapas.atual }} de {{ progressoEtapas.total }}</span>
           <span class="progress-name">{{ etapaAtualConfig?.label }}</span>
         </div>
         <div class="progress-bar">
-          <div
-            class="progress-fill"
-            [style.width.%]="progressoEtapas.porcentagem"
-          ></div>
+          <div class="progress-fill" [style.width.%]="progressoEtapas.porcentagem"></div>
         </div>
       </div>
 
@@ -50,32 +48,107 @@
           <span class="material-symbols-outlined">send</span>
           Enviar dados para importação
         </button>
+
+        <button class="gear-button" (click)="geradorConfig.open()" title="Gerar configuração de importação">
+          <span class="material-symbols-outlined">settings</span>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Área principal -->
-  <div *ngIf="started" class="table-view">
-    <!-- Tabela -->
-    <div class="box-rounded table-container">
-      <app-import-table
-        [etapaCounter]="etapaAtual"
-        [data]="tableData"
-        [cellCursor]="cellCursor"
-      >
-      </app-import-table>
+  <div class="main-area">
+
+    <!-- ESTADO 1: seleção de importação -->
+    <div *ngIf="!started" class="box-rounded seletor-area">
+      <seletor-importacoes
+        [importacoes]="importacoesPorSetor"
+        (selecionou)="onSelecionarImportacao($event)"
+      ></seletor-importacoes>
     </div>
 
-    <!-- Painel de inspeção -->
-    <div class="box-rounded cell-info">
-      <cell-inspect
-        [etapa]="etapaAtualConfig"
-        [cell]="selectedCell"
-        [cursor]="cellCursor"
-        (update)="updateCell($event)"
-        (selecionaErro)="selecionaErro($event)"
-        (validarEtapa)="validarCorrecoesDaEtapa()"
-      ></cell-inspect>
+    <!-- ESTADO 2a: processando arquivo (parse + validação) -->
+    <div *ngIf="started && loading && processandoInfo" class="box-rounded loading-state">
+      <div class="loading-spinner">
+        <span class="spinner-ring"></span>
+      </div>
+
+      <div class="loading-content">
+        <p class="loading-title">
+          {{ processandoInfo.stage === 'lendo' ? 'Lendo arquivo...' : 'Validando dados...' }}
+        </p>
+
+        <div class="loading-file-info">
+          <span class="loading-pill loading-pill--file">
+            <span class="material-symbols-outlined">description</span>
+            {{ processandoInfo.fileName }}
+          </span>
+          <span class="loading-pill loading-pill--rows" *ngIf="processandoInfo.totalLinhas > 0">
+            <span class="material-symbols-outlined">table_rows</span>
+            {{ processandoInfo.totalLinhas }} linha{{ processandoInfo.totalLinhas !== 1 ? 's' : '' }}
+          </span>
+          <span class="loading-pill loading-pill--cols">
+            <span class="material-symbols-outlined">view_column</span>
+            {{ processandoInfo.totalEtapas }} coluna{{ processandoInfo.totalEtapas !== 1 ? 's' : '' }}
+          </span>
+        </div>
+
+        <div class="loading-etapas" *ngIf="processandoInfo.stage === 'validando'">
+          <div class="etapas-track">
+            <div
+              *ngFor="let col of configAtual?.colunas; let i = index"
+              class="etapa-step"
+              [class.etapa-step--done]="i < processandoInfo.etapaIdx - 1"
+              [class.etapa-step--active]="i === processandoInfo.etapaIdx - 1"
+            >
+              <div class="etapa-dot">
+                <span class="material-symbols-outlined etapa-check" *ngIf="i < processandoInfo.etapaIdx - 1">check</span>
+                <span class="etapa-spinner" *ngIf="i === processandoInfo.etapaIdx - 1"></span>
+              </div>
+              <span class="etapa-step-label">{{ col.label }}</span>
+            </div>
+          </div>
+          <p class="loading-subtitle">
+            Etapa {{ processandoInfo.etapaIdx }}/{{ processandoInfo.totalEtapas }} — {{ processandoInfo.etapaLabel }}
+          </p>
+        </div>
+      </div>
     </div>
+
+    <!-- ESTADO 2b: importação selecionada mas sem arquivo -->
+    <div *ngIf="started && !loading && tableData.rows.length === 0" class="box-rounded empty-state">
+      <span class="material-symbols-outlined empty-icon">upload_file</span>
+      <p class="empty-title">Nenhum arquivo carregado</p>
+      <p class="empty-subtitle">Clique em <b>Carregar arquivo</b> para iniciar a importação</p>
+      <button class="upload-button" (click)="openFile()">
+        <span class="material-symbols-outlined">upload_file</span>
+        Carregar arquivo
+      </button>
+    </div>
+
+    <!-- ESTADO 3: tabela + inspeção -->
+    <div *ngIf="started && tableData.rows.length > 0" class="table-view">
+      <div class="box-rounded table-container">
+        <app-import-table
+          [etapaCounter]="etapaAtual"
+          [data]="tableData"
+          [cellCursor]="cellCursor"
+        ></app-import-table>
+      </div>
+
+      <div class="box-rounded cell-info">
+        <cell-inspect
+          [etapa]="etapaAtualConfig"
+          [cell]="selectedCell"
+          [cursor]="cellCursor"
+          (update)="updateCell($event)"
+          (selecionaErro)="selecionaErro($event)"
+          (validarEtapa)="validarCorrecoesDaEtapa()"
+        ></cell-inspect>
+      </div>
+    </div>
+
   </div>
+
+  <gerador-config #geradorConfig></gerador-config>
 </div>

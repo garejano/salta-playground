@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { ImportacoesPorSetor } from '../importacoes/lista-importacoes';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Importacao, ImportacoesPorSetor } from '../importacoes/lista-importacoes';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,4 +10,5 @@ import { CommonModule } from '@angular/common';
 })
 export class SeletorImportacoes {
   @Input() importacoes: ImportacoesPorSetor[];
+  @Output() selecionou = new EventEmitter<Importacao>();
 }

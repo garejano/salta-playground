@@ -430,36 +430,5 @@ colunas: [
 4. Sistema avança automaticamente para próxima etapa
 
 
-#### Melhorias_A - 19/03/2026
+#### Melhorias
 
-1 - Visuais
- Contexto: o botao "Enviar dados para importacao" esta com um bom estilo e tamanho.
-  - o visual dele deve ser implmenentado no outros botoes (Carregar arquivo, Confirmar e avancar etapa)
-  - o visual dele deve ser implmementaado no "Aplicar sugestoes" mas o aplicar sugestoes deve ter tom de verde claro indicando que eh um "sucesso futuro"
-
-  Validar o contraste entre os elementos, para garantir que indicacao de erro, sucesso, selecionado fiquem indicadas de forma coenrente e clara
-
-  a tabela do comonente import-table deve ser revisada visualmente para garantir clareza nos dados visuais caso precise de ajuste.
-
-
-2 - Comportamento ao atualizar dados.
-  Existem cenarios onde uma coluna skip vai ser atualizada por outra etapa.
-  Exemplo a coluna CPF do professor. ela nao eh validada mas deve conter dados validos do professor selecionado na etapa de "Professor"
-  as opcoes da etapa de professor sao {hash:hash_valida_professor, descricao:string[nome_do_professor],cpf:strin[cpf real do professor vindo do banco]}
-  entao deve ser possivel no arquivo de configuracao incluir uma propriedade update que eh um metodo updateCell(recebe o que for necessario) que ao atualizar o professor tbm vai atualizar o cpf dele na coluna referente ao cpf
-  como esse metodo eh "customizado" por etapa, ele pode funcionar diferente do metodo de update dos valores padrao
-  o objetivo eh que ao selecionar o professor tbm atualizar o cpf dele na coluna de cpf e o hash do cpf vai ser o hash_valida_professor (sei que eh dado duplicado, mas prefiro assim para manter o padrao, o backend vai saber resolver)
-  isso deve ser planejado e executado levando em conta que a configuracao de uma importacao pode ser bem diferente da outra.
-
-
-#### Melhorias_B
-
- no componente import-table quero que o <span> com classe "cell-value"
- passe a ter indicacao dos status do dado
- atualmente quando o valor eh invalido o span fica com a classe "invalid"
-
-os demais status devem usar o mesmo scss de invalid mas com cor de fundo diferente para cada status
-- valores invalidos continuam como esta
-- valores que o usuario ajustou devem ter fundo success-light
-  precisa criar um campo "changed" em CellValue e atualizar onde for necessario para fazer
-  -quando os valores forem restaudados para o original, changed deve ficar false

@@ -45,12 +45,17 @@
 }
 
 .error-label {
+  display: inline-flex;
+  align-items: center;
   background: $color-error-light;
-  border: 1px dashed $color-error;
-  color: $color-text;
-  padding: 2px 8px;
-  border-radius: 4px;
+  border: 1px solid #ef9a9a;
+  color: $color-error-dark;
+  padding: 2px 20px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .title-selected {
@@ -150,14 +155,18 @@
 }
 
 .first-prox {
-  display: flex;
-  background: $color-success-light;
-  border: $border-dashed-success;
-  padding: 2px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  gap: 12px;
+  display: inline-flex;
   align-items: center;
+  background: $color-success-light;
+  border: 1px solid #a5d6a7;
+  padding: 2px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: $color-success-dark;
+  text-overflow: ellipsis;
 }
 
 .prox-label {
@@ -207,7 +216,9 @@
   height: 24px;
   padding: 4px 4px 4px 8px;
   width: 100%;
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
 
   &:hover {
     background: $color-primary-light;
@@ -241,8 +252,8 @@
     font-weight: 600;
 
     &::after {
-      content: 'check';
-      font-family: 'Material Symbols Outlined';
+      content: "check";
+      font-family: "Material Symbols Outlined";
       font-size: 14px;
       color: $color-success;
       margin-right: 4px;
@@ -271,16 +282,21 @@
 }
 
 .button-remove {
+  margin-left: 8px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   color: $color-error-dark;
-  width: 30px;
+  width: 20px;
   border-radius: 4px;
   justify-content: center;
+  cursor: pointer;
+  padding: 2px;
+  border: 1px solid $card-bg;
 
   &:hover {
-    background-color: $color-bg-gray;
-    box-shadow: $box-shadow-default;
+    background: $color-error-light;
+    border: 1px solid $color-error-dark;
   }
 }
 
@@ -349,8 +365,10 @@
 .error-card {
   background: $card-bg;
   border-radius: 8px;
-  border: 1px solid transparent;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  border: 1px solid $color-border-light;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .error-card-header {
@@ -383,13 +401,18 @@
 
 // Pill verde quando o erro foi corrigido
 .resolved-pill {
-  background: $color-success-light;
-  border: 1px solid $color-success;
-  color: $color-success-dark;
-  font-weight: 500;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 2px;
+  background: $color-success-light;
+  border: 1px solid #a5d6a7;
+  color: $color-success-dark;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  gap: 4px;
 }
 
 .resolved-check {

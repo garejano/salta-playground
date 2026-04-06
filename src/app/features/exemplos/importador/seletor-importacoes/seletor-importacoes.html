@@ -1,17 +1,39 @@
-<div class="setor-container" *ngFor="let importacaoSetor of importacoes">
-  <span class="setor-label">{{importacaoSetor.setor}}</span>
-  <div class="importacoes-list">
-    <div
-      class="importacao-card"
-      *ngFor="let importacao of importacaoSetor.importacoes"
-    >
-      <div>
-        <b>{{importacao.label}}</b>
-      </div>
-      <div></div>
-      <div class="importacao-footer">
-        Percentual de proximidade:
-        <span class="prox-count">{{importacao.configuracao.minProx}}%</span>
+<div class="seletor-wrapper">
+  <div class="seletor-header">
+    <span class="material-symbols-outlined seletor-icon">upload_file</span>
+    <div>
+      <h2 class="seletor-title">Selecione o tipo de importação</h2>
+      <p class="seletor-subtitle">Escolha a configuração que corresponde ao arquivo que será importado</p>
+    </div>
+  </div>
+
+  <div class="setores">
+    <div class="setor-group" *ngFor="let grupo of importacoes">
+      <span class="setor-label">{{ grupo.setor }}</span>
+      <div class="importacoes-list">
+        <div
+          class="importacao-card"
+          *ngFor="let importacao of grupo.importacoes"
+          (click)="selecionou.emit(importacao)"
+        >
+          <div class="card-body">
+            <span class="material-symbols-outlined card-icon">table_view</span>
+            <div class="card-info">
+              <span class="card-label">{{ importacao.label }}</span>
+              <span class="card-setor">{{ importacao.setor }}</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="meta-pill">
+              <span class="material-symbols-outlined meta-icon">view_column</span>
+              {{ importacao.configuracao.colunas.length }} colunas
+            </span>
+            <span class="meta-pill meta-pill--prox">
+              <span class="material-symbols-outlined meta-icon">target</span>
+              {{ importacao.configuracao.minProx }}% proximidade
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,52 +1,173 @@
 @use "../variables" as *;
 
-.setor-container {
-  padding: 8px;
+// ============================================
+// WRAPPER
+// ============================================
+.seletor-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+// ============================================
+// HEADER
+// ============================================
+.seletor-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.seletor-icon {
+  font-size: 40px;
+  color: $color-primary;
+  opacity: 0.7;
+}
+
+.seletor-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: $color-text;
+}
+
+.seletor-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: $color-text-secondary;
+}
+
+// ============================================
+// GRUPOS POR SETOR
+// ============================================
+.setores {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.setor-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 24px;
-  margin-bottom: 24px;
 }
 
 .setor-label {
-  font-size: 24px;
-  font-weight: 200;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $color-text-disabled;
+  padding-left: 2px;
+  border-left: 3px solid $color-primary;
+  padding-left: 8px;
 }
 
+// ============================================
+// LISTA DE CARDS
+// ============================================
 .importacoes-list {
   display: flex;
-  gap: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
+// ============================================
+// CARD
+// ============================================
 .importacao-card {
-  padding: 8px;
-  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  border-radius: 8px;
+  gap: 16px;
+  padding: 20px;
+  min-width: 240px;
+  max-width: 320px;
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid $color-border-light;
+  background: $color-white;
   box-shadow: $box-shadow-default;
-  min-height: 200px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+
+  &:hover {
+    border-color: $color-primary;
+    box-shadow:
+      rgba(26, 115, 232, 0.15) 0px 4px 12px,
+      rgba(0, 0, 0, 0.08) 0px 1px 3px;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: $box-shadow-default;
+  }
 }
 
-.prox-count {
+.card-body {
   display: flex;
-  border-radius: 4px;
-  font-weight: 700;
-  padding: 0 8px 0 4px;
-  background: $color-success-light;
-  border: $border-dashed-success;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-icon {
+  font-size: 28px;
+  color: $color-primary;
+  opacity: 0.75;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
   gap: 4px;
-  font-size: 10px;
-  height: 20px;
-  align-items: center;
 }
 
-.importacao-footer {
+.card-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: $color-text;
+}
+
+.card-setor {
   font-size: 12px;
+  color: $color-text-secondary;
+}
+
+// ============================================
+// FOOTER DO CARD — META PILLS
+// ============================================
+.card-footer {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.meta-pill {
+  display: inline-flex;
   align-items: center;
+  gap: 4px;
+  padding: 3px 10px 3px 6px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  background: $color-primary-light;
+  border: 1px solid #90caf9;
+  color: $color-primary-dark;
+
+  &--prox {
+    background: $color-success-light;
+    border-color: #a5d6a7;
+    color: $color-success-dark;
+  }
+}
+
+.meta-icon {
+  font-size: 13px;
 }
