@@ -22,10 +22,9 @@
     </button>
   </div>
 
-  <!-- Ações -->
+  <!-- Contador -->
   <div class="info">
-    <span>Valores invalidos</span>
-
+    <span>Valores inválidos</span>
     <span class="error-counter" [class.all-resolved]="todosErrosResolvidos">
       {{ errosPendentes }}/{{ totalErros }} pendentes
     </span>
@@ -36,48 +35,49 @@
       <div
         class="error-card-container"
         [class.selected]="erroSelecionado?.idx === error.value.idx"
+        [class.card-resolved]="error.value.changed && !error.value.remove"
+        [class.card-removed]="error.value.remove"
       >
         <div class="error-card">
           <div class="error-card-header">
-            <div (click)="executeAction(error.value)" class="button-remove">
-              <span class="material-symbols-outlined icon-sm"
-                >{{getActionIcon(error.value)}}</span
-              >
+
+            <!-- Botão de ação (delete / restore / undo) -->
+            <div (click)="executeAction(error.value)" class="button-remove"
+              [class.button-restore]="error.value.changed || error.value.remove"
+              [title]="getActionTitle(error.value)">
+              <span class="material-symbols-outlined icon-sm">{{ getActionIcon(error.value) }}</span>
             </div>
+
+            <!-- Toggle do card -->
             <div class="card-toggle" (click)="toggleErro(error.value)">
+
+              <!-- Label original (fica riscado/desabilitado após correção) -->
               <span
-                (click)="toggleErro(error.value)"
                 class="error-label"
                 [class.label-disabled]="error.value.changed"
+                [class.label-removed]="error.value.remove"
                 [title]="error.value.label"
               >
                 {{ error.value.label }}
               </span>
 
-              <ng-container *ngIf="error.value.proximidade.length > 0">
-                <span class="material-symbols-outlined arrow-prox"
-                  >arrow_right_alt</span
-                >
-
-                <div
-                  *ngIf="error.value.changed"
-                  class="first-prox"
-                  [title]="error.value.label"
-                >
+              <!-- Seta + valor corrigido (sempre visível quando changed = true) -->
+              <ng-container *ngIf="error.value.changed">
+                <span class="material-symbols-outlined arrow-prox">arrow_right_alt</span>
+                <div class="first-prox resolved-pill" [title]="error.value.resolved_value">
+                  <span class="material-symbols-outlined resolved-check">check</span>
                   {{ error.value.resolved_value }}
                 </div>
+              </ng-container>
 
-                <div
-                  *ngIf="!error.value.changed"
-                  class="first-prox text-disabled"
-                  [title]="error.value.label"
-                >
+              <!-- Melhor sugestão (visível apenas quando ainda não corrigido) -->
+              <ng-container *ngIf="!error.value.changed && !error.value.remove && error.value.proximidade.length > 0">
+                <span class="material-symbols-outlined arrow-prox">arrow_right_alt</span>
+                <div class="first-prox text-disabled" [title]="error.value.proximidade[0]?.descricao">
                   {{ error.value.proximidade[0]?.descricao }}
                   <div class="prox-label">
-                    <span class="material-symbols-outlined wand-icon"
-                      >wand_stars</span
-                    >
-                    {{ error.value.proximidade[0]?.proximidade}}%
+                    <span class="material-symbols-outlined wand-icon">wand_stars</span>
+                    {{ error.value.proximidade[0]?.proximidade }}%
                   </div>
                 </div>
               </ng-container>
@@ -92,49 +92,46 @@
               </span>
             </div>
           </div>
-          <div class="error-card-footer">
-            <!-- <span class="card-line-count"> -->
-            <!-- <span -->
-            <!-- >{{ error.value.linhas.length }} {{ error.value.linhas.length > -->
-            <!-- 1 ? 'linhas' : 'linha' }} -->
-            <!-- </span> -->
-            <!-- </span> -->
-          </div>
         </div>
-        <div
-          class="error-card-body"
-          *ngIf="erroSelecionado?.idx === error.value.idx"
-        >
+
+        <!-- Corpo expansível com opções -->
+        <div class="error-card-body" *ngIf="erroSelecionado?.idx === error.value.idx">
           <scroll-container>
+
+            <!-- Sugestões por proximidade -->
             <div *ngIf="error.value.proximidade.length > 0" class="proximidade">
               <span class="sugestao-label">Sugestões</span>
               <div class="options-list">
                 <div
                   *ngFor="let prox of error.value.proximidade"
                   (click)="selectOption(prox, error.value)"
-                  class="select-option"
+                  class="select-option select-option--suggestion"
+                  [class.select-option--applied]="error.value.resolved_value === prox.descricao"
                 >
                   <span>{{ prox.descricao }}</span>
-                  <span class="sugestao-label">{{ prox.proximidade }}%</span>
+                  <span class="prox-badge">{{ prox.proximidade }}%</span>
                 </div>
               </div>
             </div>
 
-            <div class="options-list">
-              <div
-                *ngFor="let option of options"
-                (click)="selectOption(option, error.value)"
-                class="select-option"
-              >
-                <span>{{ option.descricao }}</span>
+            <!-- Lista completa de opções -->
+            <div *ngIf="options.length > 0" class="options-full">
+              <span class="sugestao-label">Todas as opções</span>
+              <div class="options-list">
+                <div
+                  *ngFor="let option of options"
+                  (click)="selectOption(option, error.value)"
+                  class="select-option"
+                  [class.select-option--applied]="error.value.resolved_value === option.descricao"
+                >
+                  <span>{{ option.descricao }}</span>
+                </div>
               </div>
             </div>
+
           </scroll-container>
         </div>
       </div>
-
     </ng-container>
   </scroll-container>
 </div>
-
-<!-- <scroll-container> </scroll-container> -->

@@ -1,4 +1,5 @@
 @use "../variables" as *;
+@use "sass:color";
 :host {
   height: 100%;
 }
@@ -206,6 +207,47 @@
   height: 24px;
   padding: 4px 4px 4px 8px;
   width: 100%;
+  transition: background 0.12s ease, border-color 0.12s ease;
+
+  &:hover {
+    background: $color-primary-light;
+    border-color: $color-primary;
+    color: $color-primary;
+  }
+
+  &:active {
+    background: color.adjust(#e3f2fd, $lightness: -6%);
+    border-color: $color-primary-dark;
+  }
+
+  &--suggestion {
+    background: $color-success-light;
+    border-color: $color-success-muted;
+
+    &:hover {
+      background: color.adjust(#e8f5e9, $lightness: -4%);
+      border-color: $color-success;
+      color: $color-success-dark;
+    }
+
+    &:active {
+      background: color.adjust(#e8f5e9, $lightness: -10%);
+    }
+  }
+
+  &--applied {
+    background: $color-success-light;
+    border: 1px solid $color-success;
+    font-weight: 600;
+
+    &::after {
+      content: 'check';
+      font-family: 'Material Symbols Outlined';
+      font-size: 14px;
+      color: $color-success;
+      margin-right: 4px;
+    }
+  }
 }
 
 .proximidade {
@@ -285,16 +327,30 @@
 // ============================================
 
 .error-card-container {
-  /* background: $card-body-bg; */
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  transition: outline 0.1s ease;
+
+  &.selected {
+    outline: 2px solid $color-primary;
+  }
+
+  &.card-resolved .error-card {
+    background: $color-success-light;
+    border: 1px solid $color-success-muted;
+  }
+
+  &.card-removed .error-card {
+    background: $color-bg-gray;
+    opacity: 0.6;
+  }
 }
-.error-card-container.selected {
-  outline: 2px solid $color-primary;
-}
+
 .error-card {
   background: $card-bg;
   border-radius: 8px;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .error-card-header {
@@ -305,27 +361,72 @@
 .card-toggle {
   display: flex;
   width: 100%;
-  /* border: 1px solid red; */
   align-items: center;
   padding: 4px;
-}
+  cursor: pointer;
+  gap: 4px;
 
-.error-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  &:hover .error-label:not(.label-disabled):not(.label-removed) {
+    border-color: $color-primary;
+  }
 }
 
 .error-card-body {
   display: flex;
   border-radius: 0px 0px 8px 8px;
-  /* background: $card-body-bg; */
   max-height: 300px;
-  /* padding: 8px; */
 }
 
 .error-label-details {
   width: 100%;
+}
+
+// Pill verde quando o erro foi corrigido
+.resolved-pill {
+  background: $color-success-light;
+  border: 1px solid $color-success;
+  color: $color-success-dark;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.resolved-check {
+  font-size: 14px;
+  color: $color-success;
+}
+
+// Label original riscado quando marcado para remoção
+.label-removed {
+  text-decoration: line-through;
+  color: $color-text-disabled;
+  border-color: $color-text-disabled;
+  background: $color-bg-gray;
+}
+
+// Badge de percentual de sugestão
+.prox-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: $color-success-dark;
+  background: color.adjust(#e8f5e9, $lightness: -4%);
+  border: 1px solid $color-success-muted;
+  border-radius: 10px;
+  padding: 0 6px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+// Seção de lista completa (separada das sugestões)
+.options-full {
+  margin-top: 6px;
+}
+
+// Botão de ação quando restaurar/desfazer (não é delete)
+.button-restore {
+  color: $color-text-secondary;
 }
 
 .card-line-count {

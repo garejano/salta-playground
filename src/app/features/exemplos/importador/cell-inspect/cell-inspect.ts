@@ -138,14 +138,15 @@ export class CellInspect {
   }
 
   getActionIcon(error: CellError): string {
-    if (error.remove) {
-      return "restore_from_trash"
-    }
-    if (error.changed) {
-      return "settings_backup_restore"
-    }
+    if (error.remove) return 'restore_from_trash';
+    if (error.changed) return 'settings_backup_restore';
+    return 'delete';
+  }
 
-    return "delete"
+  getActionTitle(error: CellError): string {
+    if (error.remove) return 'Desfazer remoção';
+    if (error.changed) return 'Restaurar valor original';
+    return 'Marcar linha para remoção';
   }
 
   // ============================================
