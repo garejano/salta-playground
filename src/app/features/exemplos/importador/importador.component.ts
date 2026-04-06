@@ -22,27 +22,7 @@ import {
 import { SeletorImportacoes } from './seletor-importacoes/seletor-importacoes';
 import { ImportacoesPorSetor, lista_importacoes } from './importacoes/lista-importacoes';
 import { carga_pedagogica } from './importacoes/carga-pedagogica';
-
-
-function normalize(term: string): string {
-  if (!term) return '';
-
-  return term
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')                            // Remove acentos
-    .replace(/[ªº]/g, '')                                       // Remove indicadores ordinais
-    .replace(/[°]/g, '')                                        // Remove símbolos de grau
-    .replace(/[–—]/g, '-')                                      // Normaliza traços
-    .replace(/['']/g, "'")                                      // Normaliza apóstrofos
-    .replace(/[""]/g, '"')                                      // Normaliza aspas
-    .replace(/[․]/g, '.')                                       // Normaliza pontos especiais
-    .replace(/[،]/g, ',')                                       // Normaliza vírgulas especiais
-    .replace(/[\u00A0\u2000-\u200B\u2028-\u2029\u3000]/g, ' ')  // Normaliza espaços especiais
-    .replace(/[^\w\s\-\.]/g, '')                                // Remove caracteres especiais
-    .replace(/\s+/g, ' ')                                       // Normaliza espaços múltiplos
-    .trim();
-}
+import { normalize } from './utils/normalize';
 
 
 @Component({
@@ -55,6 +35,11 @@ export class ImportadorComponent implements OnInit {
   started: boolean = true;
 
   importacoesPorSetor: ImportacoesPorSetor[] = lista_importacoes;
+
+  private readonly configPorTipo: Record<string, ConfiguracaoImportacao> = {
+    'cargas-iniciais': configCargasIniciais,
+    'carga-pedagogica': carga_pedagogica,
+  };
 
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
 
@@ -161,12 +146,10 @@ export class ImportadorComponent implements OnInit {
   }
 
   selecionarTipoImportacao(tipo: string): void {
+    const config = this.configPorTipo[tipo];
+    if (!config) return;
     this.tipoImportacao = tipo;
-    this.configAtual = configCargasIniciais;
-    // this.configAtual = carga_pedagogica;
-    console.log(this.configAtual)
-
-    // Reset do estado
+    this.configAtual = config;
     this.etapaAtual = 0;
     this.tableDataParsed = [];
     this.errosAgrupados = [];

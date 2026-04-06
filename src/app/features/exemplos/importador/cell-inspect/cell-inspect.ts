@@ -67,11 +67,6 @@ export class CellInspect implements OnInit {
     return Object.values(this.etapa.errors).length;
   }
 
-  logError(error: { key: string, value: CellError }) {
-    if (error.value.resolved) return;
-    error.value.resolved = true;
-  }
-
   get options(): BaseResponse[] {
     const set_prox = new Set(this.erroSelecionado?.proximidade.map(x => { return x.hash }))
     const options = this.etapa.options.filter((t) => {

@@ -57,9 +57,12 @@ export class ImportTableComponent implements OnInit, AfterViewChecked {
     return this.cellCursor.row * colLen + this.cellCursor.col;
   }
 
+  private readonly NAV_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
+
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
     if (!this.focused) return;
+    if (!this.NAV_KEYS.has(event.key)) return;
     event.preventDefault();
 
     switch (event.key) {
