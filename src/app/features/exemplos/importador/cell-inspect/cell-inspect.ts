@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseResponse, CellCursor, CellData, CellError, ColunaImportacao, UpdateCell } from '../importador.models';
 import { ScrollContainer } from '../../scroll-container/scroll-container';
@@ -9,7 +9,7 @@ import { ScrollContainer } from '../../scroll-container/scroll-container';
   styleUrl: './cell-inspect.scss',
   imports: [ScrollContainer, CommonModule]
 })
-export class CellInspect implements OnInit {
+export class CellInspect {
   // ============================================
   // INPUTS E OUTPUTS
   // ============================================
@@ -26,16 +26,7 @@ export class CellInspect implements OnInit {
   // ESTADO DO COMPONENTE
   // ============================================
 
-  error_idx = 0;
-  erroSelecionado?: CellError | null = undefined;
-
-  // ============================================
-  // LIFECYCLE HOOKS
-  // ============================================
-
-  ngOnInit(): void {
-    // Inicialização
-  }
+  erroSelecionado: CellError | null = null;
 
   // ============================================
   // GETTERS
@@ -77,7 +68,7 @@ export class CellInspect implements OnInit {
   }
 
   toggleErro(error: CellError) {
-    if (this.erroSelecionado == error) {
+    if (this.erroSelecionado === error) {
       this.erroSelecionado = null;
     } else {
       this.erroSelecionado = error;
@@ -85,46 +76,36 @@ export class CellInspect implements OnInit {
     this.selecionaErro.emit(this.erroSelecionado);
   }
 
-  selectOption(option: BaseResponse | any, error: CellError) {
+  selectOption(option: BaseResponse, error: CellError) {
     error.resolved_value = option.descricao;
     error.resolved = true;
     error.changed = true;
     this.update.emit({
       original_normalized: error.original.normalized,
-      option: option,
+      option,
       linhas: error.linhas,
       restore: false,
-    })
-    error.resolved = true;
-
+    });
     this.erroSelecionado = null;
   }
 
   restore(error: CellError) {
     error.changed = false;
     error.resolved = false;
-    const option = {
-      hash: null,
-      descricao: error.original.value
-    }
-
-    const update: UpdateCell = {
+    this.update.emit({
       original_normalized: error.original.normalized,
-      option: option,
+      option: { descricao: error.original.value },
       linhas: error.linhas,
       restore: true,
-    }
-
-    this.update.emit(update)
+    });
   }
 
   autoCorrect() {
     Object.values(this.etapa.errors).forEach((error: CellError) => {
-      if (error.proximidade.length > 0) {
-        const first = error.proximidade[0];
-        this.selectOption(first, error)
+      if (!error.resolved && !error.remove && error.proximidade.length > 0) {
+        this.selectOption(error.proximidade[0], error);
       }
-    })
+    });
   }
 
   remove(error: CellError) {

@@ -9,6 +9,7 @@ import { CellInspect } from './cell-inspect/cell-inspect';
 import { raw_data, raw_data_test } from './raw_table_mock';
 import { configCargasIniciais } from './importacoes/cargas-iniciais';
 import {
+  BaseResponse,
   CellCursor,
   CellData,
   CellError,
@@ -317,8 +318,9 @@ export class ImportadorComponent implements OnInit {
 
     // Chama a função de update customizada da etapa, se configurada
     const etapa = this.etapaAtualConfig;
+    // updateFn só é chamado em seleções (não em restore), onde option.hash sempre existe
     if (etapa?.updateFn && !update.restore && update.linhas?.length) {
-      etapa.updateFn(etapa.options, update.option, this.tableData.rows, update.linhas);
+      etapa.updateFn(etapa.options, update.option as BaseResponse, this.tableData.rows, update.linhas);
     }
   }
 

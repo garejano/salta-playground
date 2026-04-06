@@ -103,7 +103,7 @@ export interface ConfiguracaoImportacao {
 
 export interface UpdateCell {
   original_normalized?: string;
-  option: { hash: string, descricao: string };
+  option: { hash?: string; descricao: string };
   linhas?: number[];
   restore: boolean;
 }
