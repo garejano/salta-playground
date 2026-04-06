@@ -17,18 +17,19 @@ import { BaseResponse, ConfiguracaoImportacao, RowData } from '../importador.mod
  * O CPF real vem do campo `cpf` da opção do professor (retornado pelo backend).
  * O hash do CPF é o mesmo hash do professor (dado duplicado intencional para manter padrão).
  */
-const CPF_COL_IDX = 3;
+const CPF_COL_KEY = 'cpf';
 
 interface BaseProfessor { hash: string; descricao: string; cpf: string }
 
 function atualizarCpfDoProfessor(options: BaseResponse[], option: BaseResponse, rows: RowData[], linhas: number[]): void {
-  const professor: { hash: string, descricao: string, cpf: string } = options.find(x => x.hash == option.hash) as BaseProfessor;
+  const professor = options.find(x => x.hash === option.hash) as BaseProfessor | undefined;
+  if (!professor) return;
 
   linhas.forEach(rowIdx => {
     const row = rows[rowIdx];
     if (!row) return;
 
-    const cpfCell = row.cells[CPF_COL_IDX];
+    const cpfCell = row.cells.find(c => c.type === CPF_COL_KEY);
     if (!cpfCell) return;
 
     if (cpfCell.values && cpfCell.values.length > 0) {
@@ -58,21 +59,20 @@ function atualizarCpfDoProfessor(options: BaseResponse[], option: BaseResponse, 
 }
 
 function buildRequest(rows: RowData[]) {
-  const request = rows.map((row) => {
-    const getHashes = (colIdx: number): string[] => {
-      const values = row.cells[colIdx]?.values || [];
-      return values.map(v => v.hash || v.value || '').filter(h => h);
-    };
+  return rows.map((row) => {
+    const getHashesByKey = (key: string): string[] =>
+      row.cells.find(c => c.type === key)?.values
+        ?.map(v => v.hash || v.value || '')
+        .filter(Boolean) ?? [];
 
     return {
-      hashEscola: getHashes(0),
-      hashTurma: getHashes(1),
-      hashDisciplina: getHashes(2),
-      hashCPF: getHashes(3),      // CPF usa o próprio valor, não tem hash
-      hashProfessor: getHashes(4),
+      hashEscola:     getHashesByKey('escola'),
+      hashTurma:      getHashesByKey('turma'),
+      hashDisciplina: getHashesByKey('disciplina'),
+      hashCPF:        getHashesByKey('cpf'),
+      hashProfessor:  getHashesByKey('professor'),
     };
-  })
-  return request;
+  });
 }
 
 export const configCargasIniciais: ConfiguracaoImportacao = {

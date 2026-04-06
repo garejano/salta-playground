@@ -16,7 +16,6 @@ import {
   ColunaImportacao,
   ConfiguracaoImportacao,
   RowData,
-  RowPayload,
   TableData,
   UpdateCell
 } from './importador.models';
@@ -68,10 +67,6 @@ export class ImportadorComponent implements OnInit {
   configAtual: ConfiguracaoImportacao;
   tiposImportacao: string[] = [];
 
-  importacaoOptions = [
-    { hash: 1, descricao: 'Cargas Iniciais - Alocacao de Professores' }
-  ];
-
   headers: string[] = [];
   parsedOriginal: string[][];
   tableDataParsed: RowData[] = [];
@@ -101,16 +96,16 @@ export class ImportadorComponent implements OnInit {
   starImportacao() {
     this.started = true;
     // TODO: Remover após implementar upload real
-    this.tableDataParsed = this.buildTableData(raw_data_test);
-    // this.tableDataParsed = this.buildTableData(raw_data);
+    // this.tableDataParsed = this.buildTableData(raw_data_test);
+    this.tableDataParsed = this.buildTableData(raw_data);
     this.validarEtapa();
 
   }
 
   get tableData(): TableData {
     return {
-      // headers: ['Escola', 'Turma', 'Disciplina', 'CPF do professor', 'Nome do professor'],
-      headers: this.headers,
+      headers: ['Escola', 'Turma', 'Disciplina', 'CPF do professor', 'Nome do professor'],
+      // headers: this.headers,
       rows: this.tableDataParsed
     };
   }
@@ -473,21 +468,6 @@ export class ImportadorComponent implements OnInit {
     return this.configAtual.buildRequest(this.tableData.rows);
   }
 
-
-  private extrairPayloadLinha(row: RowData): RowPayload {
-    const getHashes = (colIdx: number): string[] => {
-      const values = row.cells[colIdx]?.values || [];
-      return values.map(v => v.hash || v.value || '').filter(h => h);
-    };
-
-    return {
-      hashEscola: getHashes(0),
-      hashTurma: getHashes(1),
-      hashDisciplina: getHashes(2),
-      hashCPF: getHashes(3),      // CPF usa o próprio valor, não tem hash
-      hashProfessor: getHashes(4),
-    };
-  }
 
   enviarParaImportacao(): void {
     if (!this.todasEtapasValidas) {
