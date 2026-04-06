@@ -4,7 +4,7 @@
     <span><b>Coluna: </b>{{ etapa.label }}</span>
 
     <button
-      *ngIf="!todosErrosResolvidos"
+      *ngIf="!todosErrosResolvidos && temSugestoes"
       (click)="autoCorrect()"
       class="auto-button"
     >

@@ -58,6 +58,13 @@ export class CellInspect {
     return Object.values(this.etapa.errors).length;
   }
 
+  get temSugestoes(): boolean {
+    if (!this.etapa?.errors) return false;
+    return Object.values(this.etapa.errors).some(
+      e => !e.resolved && !e.remove && e.proximidade.length > 0
+    );
+  }
+
   get options(): BaseResponse[] {
     const set_prox = new Set(this.erroSelecionado?.proximidade.map(x => { return x.hash }))
     const options = this.etapa.options.filter((t) => {
@@ -92,6 +99,7 @@ export class CellInspect {
   restore(error: CellError) {
     error.changed = false;
     error.resolved = false;
+    error.resolved_value = undefined;
     this.update.emit({
       original_normalized: error.original.normalized,
       option: { descricao: error.original.value },
