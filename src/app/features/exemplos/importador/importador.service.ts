@@ -68,6 +68,29 @@ export class ImportadorService {
   private readonly WINKLER_MAX_PREFIX = 4;
   private readonly WINKLER_SCALE      = 0.1;
 
+  /**
+   * Extrai sequências numéricas de uma string em ordem de aparição.
+   * Ex: '5 ano B - M' → [5], '5º ano 2' → [5, 2]
+   */
+  private extractNumbers(str: string): number[] {
+    return (str.match(/\d+/g) ?? []).map(Number);
+  }
+
+  /**
+   * Retorna true se ambas as strings possuem sequências numéricas idênticas
+   * (mesmo count, mesmos valores, mesma ordem).
+   *
+   * Números são identificadores semânticos (série, turma, ano...). Uma diferença
+   * numérica, mesmo que pequena ('5 ano' vs '6 ano'), invalida a correspondência
+   * independente de quão similar é o restante do texto.
+   */
+  private hasSameNumbers(a: string, b: string): boolean {
+    const numsA = this.extractNumbers(a);
+    const numsB = this.extractNumbers(b);
+    if (numsA.length !== numsB.length) return false;
+    return numsA.every((n, i) => n === numsB[i]);
+  }
+
   private levenshteinScore(a: string, b: string): number {
     const lenA = a.length;
     const lenB = b.length;
@@ -150,6 +173,14 @@ export class ImportadorService {
 
     return lista.map(item => {
       const descNorm = normalize(item.descricao);
+
+      // Números são identificadores semânticos — qualquer diferença numérica
+      // invalida a correspondência antes de qualquer outro cálculo.
+      // Garante que '5º ano B' (busca) nunca sugira '6º ano B' (opção),
+      // e evita falso positivo de substring ('5 ano' ⊂ '15 ano B').
+      if (!this.hasSameNumbers(buscaNorm, descNorm)) {
+        return { hash: item.hash, descricao: item.descricao, proximidade: 0 };
+      }
 
       if (descNorm.includes(buscaNorm)) {
         return { hash: item.hash, descricao: item.descricao, proximidade: 100 };
