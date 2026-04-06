@@ -85,14 +85,13 @@ export class ImportadorComponent implements OnInit {
     // TODO: Remover após implementar upload real
     // this.tableDataParsed = this.buildTableData(raw_data_test);
     this.tableDataParsed = this.buildTableData(raw_data);
+    this.headers = this.configAtual.colunas.map(c => c.label);
     this.validarEtapa();
-
   }
 
   get tableData(): TableData {
     return {
-      headers: ['Escola', 'Turma', 'Disciplina', 'CPF do professor', 'Nome do professor'],
-      // headers: this.headers,
+      headers: this.headers,
       rows: this.tableDataParsed
     };
   }
@@ -205,18 +204,46 @@ export class ImportadorComponent implements OnInit {
       complete: () => this.loading = false
     });
   }
-  private handleParseSuccess(result: string[][]): void {
-    this.headers = result.shift() || [];
+  fileError: string | null = null;
 
-    // Validação de colunas
-    if (this.headers.length !== this.configAtual.colunas.length) {
-      console.warn('Tabela não possui a quantidade de colunas esperada pela configuração');
+  private handleParseSuccess(result: string[][]): void {
+    const headersDoArquivo = result.shift() || [];
+    const erroHeaders = this.validarCompatibilidadeHeaders(headersDoArquivo);
+
+    if (erroHeaders) {
+      this.fileError = erroHeaders;
+      console.warn('[Importador]', erroHeaders);
       return;
     }
 
+    this.fileError = null;
+    this.headers = headersDoArquivo;
     this.parsedOriginal = result;
     this.tableDataParsed = this.buildTableData(result);
     this.validarEtapa();
+  }
+
+  private validarCompatibilidadeHeaders(headersDoArquivo: string[]): string | null {
+    const esperado = this.configAtual.colunas;
+
+    if (headersDoArquivo.length !== esperado.length) {
+      return `O arquivo tem ${headersDoArquivo.length} coluna(s), mas a importação "${this.tipoImportacao}" espera ${esperado.length}.`;
+    }
+
+    const incompativeis = esperado
+      .map((col, i) => ({ col, headerArquivo: headersDoArquivo[i] }))
+      .filter(({ col, headerArquivo }) =>
+        normalize(headerArquivo) !== normalize(col.label)
+      );
+
+    if (incompativeis.length > 0) {
+      const detalhes = incompativeis
+        .map(({ col, headerArquivo }) => `coluna ${col.label}: encontrado "${headerArquivo}"`)
+        .join('; ');
+      return `Cabeçalhos incompatíveis com a configuração — ${detalhes}.`;
+    }
+
+    return null;
   }
 
   private buildTableData(parsed: (string | number)[][]): RowData[] {

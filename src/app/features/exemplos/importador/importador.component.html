@@ -16,6 +16,10 @@
           <span class="material-symbols-outlined">upload_file</span>
           Carregar arquivo
         </button>
+        <div *ngIf="fileError" class="file-error">
+          <span class="material-symbols-outlined">error</span>
+          {{ fileError }}
+        </div>
       </div>
 
       <!-- Indicador de progresso das etapas -->
